@@ -188,7 +188,7 @@ export default function Sidebar({ user }: SidebarProps) {
           <div style={{
             padding: '16px',
             borderBottom: '1px solid #F3F4F6',
-            backgroundColor: '#1A7F64',
+            background: 'linear-gradient(135deg, #085041 0%, #1A7F64 50%, #25A882 100%)',
             borderRadius: '12px 12px 0 0'
           }}>
             <div className="flex items-center space-x-3">
@@ -199,18 +199,19 @@ export default function Sidebar({ user }: SidebarProps) {
                   color: '#1A7F64',
                   width: '48px',
                   height: '48px',
-                  fontSize: '18px'
+                  fontSize: '18px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                 }}
               >
                 {getUserInitials(user.email || '')}
               </div>
               <div className="flex-1 min-w-0">
                 <div
-                  className="font-display font-medium truncate"
+                  className="font-display truncate"
                   style={{
                     color: '#FFFFFF',
                     fontSize: '14px',
-                    fontWeight: 500
+                    fontWeight: 600
                   }}
                 >
                   {getDisplayName(user.email || '')}
