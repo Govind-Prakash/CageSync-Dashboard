@@ -84,7 +84,9 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white">
       <div className="flex min-h-screen">
         {/* Left Side - Branding & Value Prop */}
-        <div className="hidden lg:flex lg:w-1/2 relative" style={{backgroundColor: '#E8F5F1'}}>
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #E8F5F1 0%, #D1ECE4 50%, #BDE4D3 100%)'
+        }}>
           <div className="flex flex-col justify-center px-16 py-12 w-full">
             {/* Brand Header */}
             <div className="mb-12">
@@ -181,23 +183,81 @@ export default function LoginPage() {
               </div>
             </div>
           </div>
+
+          {/* CageSync Network: Scan. Log. Sync. */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+
+            {/* Network Connection Lines */}
+            <path d="M70,120 Q150,140 230,180" stroke="rgba(26, 127, 100, 0.025)" strokeWidth="1.5" fill="none" />
+            <path d="M230,180 Q280,220 320,280" stroke="rgba(37, 168, 130, 0.03)" strokeWidth="1.5" fill="none" />
+            <path d="M320,280 Q250,350 180,420" stroke="rgba(26, 127, 100, 0.025)" strokeWidth="1.5" fill="none" />
+            <path d="M180,420 Q140,380 110,340" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1.5" fill="none" />
+            <path d="M110,340 Q80,250 70,120" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
+            <path d="M350,150 Q300,200 230,180" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1" fill="none" />
+
+            {/* QR/Barcode Icons - "SCAN" */}
+            <g transform="translate(65, 115)" fill="rgba(26, 127, 100, 0.04)">
+              <rect x="0" y="0" width="2" height="10" />
+              <rect x="3" y="0" width="1" height="10" />
+              <rect x="5" y="0" width="3" height="10" />
+              <rect x="9" y="0" width="1" height="10" />
+              <rect x="11" y="0" width="2" height="10" />
+            </g>
+
+            <g transform="translate(345, 145)" fill="rgba(37, 168, 130, 0.045)">
+              <rect x="0" y="0" width="1" height="8" />
+              <rect x="2" y="0" width="2" height="8" />
+              <rect x="5" y="0" width="1" height="8" />
+              <rect x="7" y="0" width="3" height="8" />
+            </g>
+
+            {/* Mouse Silhouettes - "LOG" */}
+            <g transform="translate(225, 175) scale(0.25)" fill="rgba(26, 127, 100, 0.035)">
+              <ellipse cx="10" cy="8" rx="8" ry="5" />
+              <circle cx="6" cy="6" r="1" />
+              <circle cx="14" cy="6" r="1" />
+              <ellipse cx="18" cy="10" rx="3" ry="2" />
+              <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
+            </g>
+
+            <g transform="translate(315, 275) scale(0.2)" fill="rgba(37, 168, 130, 0.04)">
+              <ellipse cx="10" cy="8" rx="8" ry="5" />
+              <circle cx="6" cy="6" r="1" />
+              <circle cx="14" cy="6" r="1" />
+              <ellipse cx="18" cy="10" rx="3" ry="2" />
+              <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
+            </g>
+
+            {/* Data Points/Circles - "SYNC" */}
+            <circle cx="110" cy="340" r="8" fill="rgba(26, 127, 100, 0.04)" stroke="rgba(26, 127, 100, 0.06)" strokeWidth="1" />
+            <circle cx="180" cy="420" r="6" fill="rgba(37, 168, 130, 0.045)" stroke="rgba(37, 168, 130, 0.065)" strokeWidth="1" />
+
+            {/* Central Hub Node */}
+            <circle cx="230" cy="180" r="4" fill="rgba(26, 127, 100, 0.06)" stroke="rgba(26, 127, 100, 0.08)" strokeWidth="1.5" />
+
+            {/* Additional Network Nodes */}
+            <circle cx="320" cy="280" r="3" fill="rgba(37, 168, 130, 0.05)" />
+            <circle cx="70" cy="120" r="3" fill="rgba(26, 127, 100, 0.05)" />
+            <circle cx="350" cy="150" r="2" fill="rgba(37, 168, 130, 0.06)" />
+
+          </svg>
         </div>
 
         {/* Right Side - Authentication Form */}
-        <div className="flex-1 flex items-center justify-center px-16 py-12">
-          <div className="w-full max-w-sm">
+        <div className="flex-1 flex items-center justify-center px-4 py-8 lg:px-16 lg:py-12">
+          <div className="w-full max-w-xs lg:max-w-sm">
             {/* Mobile Logo */}
-            <div className="lg:hidden text-center mb-10">
+            <div className="lg:hidden text-center mb-6 lg:mb-10">
               <div className="flex items-center justify-center mb-4">
                 <Image
                   src="/images/logo.png"
                   alt="CageSync"
-                  width={44}
-                  height={44}
-                  className="rounded-lg mr-4"
+                  width={36}
+                  height={36}
+                  className="rounded-lg mr-3"
                 />
-                <div>
-                  <h1 className="font-display font-semibold text-2xl text-slate-800 leading-none">
+                <div className="text-center">
+                  <h1 className="font-display font-semibold text-xl text-slate-800 leading-none">
                     CageSync
                   </h1>
                   <p className="font-body text-xs text-slate-600 tracking-wide mt-1">
@@ -207,11 +267,11 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="mb-10">
-              <h2 className="font-display font-semibold text-3xl text-slate-800 mb-3 leading-tight">
+            <div className="mb-6 lg:mb-10 text-center lg:text-left">
+              <h2 className="font-display font-semibold text-xl lg:text-3xl text-slate-800 mb-3 leading-tight">
                 {isSignUp ? 'Create your account' : 'Welcome back'}
               </h2>
-              <p className="font-body text-lg text-slate-600 leading-relaxed">
+              <p className="font-body text-base lg:text-lg text-slate-600 leading-relaxed">
                 {isSignUp
                   ? 'Get started with your research colony management'
                   : 'Sign in to access your lab dashboard'
@@ -227,11 +287,11 @@ export default function LoginPage() {
             )}
 
             {/* SSO Options */}
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3 mb-4 lg:mb-6">
               <button
                 onClick={handleGoogleAuth}
                 disabled={isGoogleLoading}
-                className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-surface focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-body font-medium text-slate-700"
+                className="w-full flex items-center justify-center px-4 py-3.5 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary-surface focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-body font-medium text-slate-700"
               >
                 {isGoogleLoading ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-600 mr-3"></div>
@@ -259,17 +319,17 @@ export default function LoginPage() {
               </button>
             </div>
 
-            <div className="relative mb-6">
+            <div className="relative mb-4 lg:mb-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500 font-body">Or continue with email</span>
+                <span className="px-3 bg-white text-slate-500 font-body">Or continue with email</span>
               </div>
             </div>
 
             {/* Email Form */}
-            <div className="space-y-4">
+            <div className="space-y-3 lg:space-y-4">
               <div>
                 <label className="block font-body font-medium text-sm text-slate-800 mb-2">
                   Email address
@@ -307,7 +367,7 @@ export default function LoginPage() {
               <button
                 onClick={handleEmailAuth}
                 disabled={isLoading}
-                className="w-full text-white font-body font-medium py-2.5 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:opacity-90"
+                className="w-full text-white font-body font-medium py-3.5 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:opacity-90"
                 style={{backgroundColor: '#1A7F64', '--tw-ring-color': '#E8F5F1'} as React.CSSProperties}
               >
                 {isLoading ? (
@@ -322,7 +382,7 @@ export default function LoginPage() {
             </div>
 
             {/* Toggle Sign Up / Sign In */}
-            <div className="mt-6 text-center">
+            <div className="mt-4 lg:mt-6 text-center">
               <button
                 onClick={() => {
                   setIsSignUp(!isSignUp)
@@ -339,8 +399,8 @@ export default function LoginPage() {
             </div>
 
             {/* Trust Signals */}
-            <div className="mt-8 pt-8 border-t border-slate-200">
-              <div className="flex items-center justify-center space-x-6 text-xs text-slate-600">
+            <div className="mt-6 lg:mt-8 pt-6 lg:pt-8 border-t border-slate-200">
+              <div className="flex items-center justify-center space-x-4 lg:space-x-6 text-xs text-slate-600">
                 <div className="flex items-center">
                   <svg className="w-4 h-4 mr-1" style={{color: '#1A7F64'}} fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
