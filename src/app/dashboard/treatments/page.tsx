@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { LayoutGrid, Plus } from 'lucide-react'
-import AddCageModal from '@/components/cages/add-cage-modal'
+import { Syringe, Plus } from 'lucide-react'
+import AddTreatmentModal from '@/components/treatments/add-treatment-modal'
 
-export default async function CagesPage() {
+export default async function TreatmentsPage() {
   const supabase = await createClient()
 
   const {
@@ -14,22 +14,21 @@ export default async function CagesPage() {
     redirect('/login')
   }
 
-  const { data: cages } = await supabase
-    .from('cages')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const { data: treatments } = await supabase
+    .from('treatments')
+    .select('*, animals(animal_code)')
+    .order('administered_at', { ascending: false })
 
-  // Get relative time
-  const getRelativeTime = (date: string) => {
-    const now = new Date()
-    const past = new Date(date)
-    const diffTime = now.getTime() - past.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    if (diffDays === 1) return '1 day ago'
-    if (diffDays <= 7) return `${diffDays} days ago`
-    if (diffDays <= 30) return `${Math.ceil(diffDays / 7)} weeks ago`
-    return `${Math.ceil(diffDays / 30)} months ago`
+  // Format date and time
+  const formatDateTime = (dateTime: string) => {
+    return new Date(dateTime).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
   }
 
   return (
@@ -39,7 +38,7 @@ export default async function CagesPage() {
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Search cages..."
+            placeholder="Search treatments..."
             className="px-3 py-2 border rounded-lg font-body placeholder-gray-500 focus:outline-none focus:border-[#1A7F64] focus:ring-2 focus:ring-[#E8F5F1]"
             style={{
               borderColor: '#E2E8F0',
@@ -49,7 +48,7 @@ export default async function CagesPage() {
             }}
           />
         </div>
-        <AddCageModal>
+        <AddTreatmentModal>
           <button
             className="inline-flex items-center px-4 py-2 rounded-lg font-body font-medium transition-colors"
             style={{
@@ -59,15 +58,15 @@ export default async function CagesPage() {
             }}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Cage
+            Log Treatment
           </button>
-        </AddCageModal>
+        </AddTreatmentModal>
       </div>
 
       {/* Table or Empty State */}
-      {!cages || cages.length === 0 ? (
+      {!treatments || treatments.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
-          <LayoutGrid
+          <Syringe
             style={{ color: '#1A7F64', width: '40px', height: '40px' }}
             className="mb-4"
           />
@@ -78,7 +77,7 @@ export default async function CagesPage() {
               fontSize: '16px'
             }}
           >
-            No cages yet
+            No treatments recorded
           </h3>
           <p
             className="font-body text-center mb-6 max-w-sm"
@@ -87,9 +86,9 @@ export default async function CagesPage() {
               fontSize: '14px'
             }}
           >
-            Add your first cage to start tracking your colony
+            Log treatments for your animals
           </p>
-          <AddCageModal>
+          <AddTreatmentModal>
             <button
               className="inline-flex items-center px-4 py-2 rounded-lg font-body font-medium transition-colors"
               style={{
@@ -99,9 +98,9 @@ export default async function CagesPage() {
               }}
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Cage
+              Log Treatment
             </button>
-          </AddCageModal>
+          </AddTreatmentModal>
         </div>
       ) : (
         <div className="bg-white rounded-lg border" style={{ borderColor: '#E2E8F0' }}>
@@ -115,7 +114,7 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Cage Code
+                  Animal
                 </th>
                 <th
                   className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
@@ -124,7 +123,7 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Label
+                  Treatment Type
                 </th>
                 <th
                   className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
@@ -133,7 +132,7 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Status
+                  Substance
                 </th>
                 <th
                   className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
@@ -142,7 +141,7 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Notes
+                  Dose
                 </th>
                 <th
                   className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
@@ -151,14 +150,23 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Created
+                  Route
+                </th>
+                <th
+                  className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
+                  style={{
+                    color: '#6B7280',
+                    fontSize: '11px'
+                  }}
+                >
+                  Administered At
                 </th>
               </tr>
             </thead>
             <tbody>
-              {cages.map((cage) => (
+              {treatments.map((treatment) => (
                 <tr
-                  key={cage.id}
+                  key={treatment.id}
                   className="border-b"
                   style={{ borderColor: '#E2E8F0' }}
                 >
@@ -170,7 +178,18 @@ export default async function CagesPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {cage.cage_code}
+                      {treatment.animals?.animal_code || '-'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className="font-body"
+                      style={{
+                        color: '#1A1A2E',
+                        fontSize: '14px'
+                      }}
+                    >
+                      {treatment.treatment_type}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -181,18 +200,7 @@ export default async function CagesPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {cage.label || '-'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className="px-2 py-1 rounded-full font-body text-xs"
-                      style={{
-                        backgroundColor: cage.status === 'active' ? '#E8F5F1' : '#F3F4F6',
-                        color: cage.status === 'active' ? '#1A7F64' : '#6B7280'
-                      }}
-                    >
-                      {cage.status}
+                      {treatment.substance || '-'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -203,7 +211,7 @@ export default async function CagesPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {cage.notes ? cage.notes.substring(0, 40) + (cage.notes.length > 40 ? '...' : '') : '-'}
+                      {treatment.dose || '-'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -214,7 +222,18 @@ export default async function CagesPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {getRelativeTime(cage.created_at)}
+                      {treatment.route || '-'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className="font-body"
+                      style={{
+                        color: '#6B7280',
+                        fontSize: '14px'
+                      }}
+                    >
+                      {treatment.administered_at ? formatDateTime(treatment.administered_at) : '-'}
                     </span>
                   </td>
                 </tr>

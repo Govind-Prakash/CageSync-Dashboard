@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { LayoutGrid, Plus } from 'lucide-react'
-import AddCageModal from '@/components/cages/add-cage-modal'
+import { Rabbit, Plus } from 'lucide-react'
+import AddAnimalModal from '@/components/animals/add-animal-modal'
 
-export default async function CagesPage() {
+export default async function AnimalsPage() {
   const supabase = await createClient()
 
   const {
@@ -14,9 +14,9 @@ export default async function CagesPage() {
     redirect('/login')
   }
 
-  const { data: cages } = await supabase
-    .from('cages')
-    .select('*')
+  const { data: animals } = await supabase
+    .from('animals')
+    .select('*, cages(cage_code, label)')
     .order('created_at', { ascending: false })
 
   // Get relative time
@@ -32,6 +32,15 @@ export default async function CagesPage() {
     return `${Math.ceil(diffDays / 30)} months ago`
   }
 
+  // Format date
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
+
   return (
     <div className="pt-2">
       {/* Top Row */}
@@ -39,7 +48,7 @@ export default async function CagesPage() {
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Search cages..."
+            placeholder="Search animals..."
             className="px-3 py-2 border rounded-lg font-body placeholder-gray-500 focus:outline-none focus:border-[#1A7F64] focus:ring-2 focus:ring-[#E8F5F1]"
             style={{
               borderColor: '#E2E8F0',
@@ -49,7 +58,7 @@ export default async function CagesPage() {
             }}
           />
         </div>
-        <AddCageModal>
+        <AddAnimalModal>
           <button
             className="inline-flex items-center px-4 py-2 rounded-lg font-body font-medium transition-colors"
             style={{
@@ -59,15 +68,15 @@ export default async function CagesPage() {
             }}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Cage
+            Add Animal
           </button>
-        </AddCageModal>
+        </AddAnimalModal>
       </div>
 
       {/* Table or Empty State */}
-      {!cages || cages.length === 0 ? (
+      {!animals || animals.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
-          <LayoutGrid
+          <Rabbit
             style={{ color: '#1A7F64', width: '40px', height: '40px' }}
             className="mb-4"
           />
@@ -78,7 +87,7 @@ export default async function CagesPage() {
               fontSize: '16px'
             }}
           >
-            No cages yet
+            No animals yet
           </h3>
           <p
             className="font-body text-center mb-6 max-w-sm"
@@ -87,9 +96,9 @@ export default async function CagesPage() {
               fontSize: '14px'
             }}
           >
-            Add your first cage to start tracking your colony
+            Add animals after setting up cages
           </p>
-          <AddCageModal>
+          <AddAnimalModal>
             <button
               className="inline-flex items-center px-4 py-2 rounded-lg font-body font-medium transition-colors"
               style={{
@@ -99,9 +108,9 @@ export default async function CagesPage() {
               }}
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Cage
+              Add Animal
             </button>
-          </AddCageModal>
+          </AddAnimalModal>
         </div>
       ) : (
         <div className="bg-white rounded-lg border" style={{ borderColor: '#E2E8F0' }}>
@@ -115,7 +124,7 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Cage Code
+                  Animal Code
                 </th>
                 <th
                   className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
@@ -124,7 +133,25 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Label
+                  Species/Strain
+                </th>
+                <th
+                  className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
+                  style={{
+                    color: '#6B7280',
+                    fontSize: '11px'
+                  }}
+                >
+                  Sex
+                </th>
+                <th
+                  className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
+                  style={{
+                    color: '#6B7280',
+                    fontSize: '11px'
+                  }}
+                >
+                  Cage
                 </th>
                 <th
                   className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
@@ -142,23 +169,14 @@ export default async function CagesPage() {
                     fontSize: '11px'
                   }}
                 >
-                  Notes
-                </th>
-                <th
-                  className="px-6 py-3 text-left font-body font-medium uppercase tracking-wider"
-                  style={{
-                    color: '#6B7280',
-                    fontSize: '11px'
-                  }}
-                >
-                  Created
+                  DOB
                 </th>
               </tr>
             </thead>
             <tbody>
-              {cages.map((cage) => (
+              {animals.map((animal) => (
                 <tr
-                  key={cage.id}
+                  key={animal.id}
                   className="border-b"
                   style={{ borderColor: '#E2E8F0' }}
                 >
@@ -170,7 +188,7 @@ export default async function CagesPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {cage.cage_code}
+                      {animal.animal_code}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -181,18 +199,52 @@ export default async function CagesPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {cage.label || '-'}
+                      {animal.species && animal.strain ? `${animal.species} - ${animal.strain}` : animal.species || animal.strain || '-'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span
                       className="px-2 py-1 rounded-full font-body text-xs"
                       style={{
-                        backgroundColor: cage.status === 'active' ? '#E8F5F1' : '#F3F4F6',
-                        color: cage.status === 'active' ? '#1A7F64' : '#6B7280'
+                        backgroundColor:
+                          animal.sex === 'male' ? '#E8F5F1' :
+                          animal.sex === 'female' ? '#FEF3D8' : '#F3F4F6',
+                        color:
+                          animal.sex === 'male' ? '#1A7F64' :
+                          animal.sex === 'female' ? '#854F0B' : '#6B7280'
                       }}
                     >
-                      {cage.status}
+                      {animal.sex || 'unknown'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className="font-mono"
+                      style={{
+                        color: '#6B7280',
+                        fontSize: '14px'
+                      }}
+                    >
+                      {animal.cages?.cage_code || '-'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className="px-2 py-1 rounded-full font-body text-xs"
+                      style={{
+                        backgroundColor:
+                          animal.status === 'alive' ? '#E8F5F1' :
+                          animal.status === 'deceased' ? '#F3F4F6' :
+                          animal.status === 'sacrificed' ? '#FCEBEB' :
+                          animal.status === 'transferred' ? '#FEF3D8' : '#F3F4F6',
+                        color:
+                          animal.status === 'alive' ? '#1A7F64' :
+                          animal.status === 'deceased' ? '#6B7280' :
+                          animal.status === 'sacrificed' ? '#A32D2D' :
+                          animal.status === 'transferred' ? '#854F0B' : '#6B7280'
+                      }}
+                    >
+                      {animal.status || 'alive'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -203,18 +255,7 @@ export default async function CagesPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {cage.notes ? cage.notes.substring(0, 40) + (cage.notes.length > 40 ? '...' : '') : '-'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className="font-body"
-                      style={{
-                        color: '#6B7280',
-                        fontSize: '14px'
-                      }}
-                    >
-                      {getRelativeTime(cage.created_at)}
+                      {animal.date_of_birth ? formatDate(animal.date_of_birth) : '-'}
                     </span>
                   </td>
                 </tr>
