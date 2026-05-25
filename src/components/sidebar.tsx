@@ -88,8 +88,31 @@ export default function Sidebar({ user }: SidebarProps) {
 
   // Get profile picture URL
   const getProfilePicture = (): string | null => {
-    return user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+    const avatarUrl = user.user_metadata?.avatar_url
+    const pictureUrl = user.user_metadata?.picture
+    const result = avatarUrl || pictureUrl || null
+
+    // Debug logging
+    console.log('🔍 Profile Picture Debug:')
+    console.log('  avatar_url:', avatarUrl)
+    console.log('  picture:', pictureUrl)
+    console.log('  final result:', result)
+
+    return result
   }
+
+  // Store profile picture URL to avoid multiple function calls
+  const profilePictureUrl = getProfilePicture()
+
+  // Debug user data on mount/change
+  useEffect(() => {
+    console.log('👤 User Debug Info:')
+    console.log('  Full user object:', user)
+    console.log('  Email:', user.email)
+    console.log('  User metadata:', user.user_metadata)
+    console.log('  All metadata keys:', user.user_metadata ? Object.keys(user.user_metadata) : 'No metadata')
+    console.log('========================')
+  }, [user])
 
   // Close profile menu when clicking outside
   useEffect(() => {
@@ -195,9 +218,9 @@ export default function Sidebar({ user }: SidebarProps) {
                 fontSize: '12px'
               }}
             >
-              {getProfilePicture() ? (
+              {profilePictureUrl ? (
                 <img
-                  src={getProfilePicture()!}
+                  src={profilePictureUrl}
                   alt="Profile"
                   className="w-8 h-8 rounded-full object-cover"
                 />
@@ -244,9 +267,9 @@ export default function Sidebar({ user }: SidebarProps) {
                   boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                 }}
               >
-                {getProfilePicture() ? (
+                {profilePictureUrl ? (
                   <img
-                    src={getProfilePicture()!}
+                    src={profilePictureUrl}
                     alt="Profile"
                     className="w-12 h-12 rounded-full object-cover"
                   />
