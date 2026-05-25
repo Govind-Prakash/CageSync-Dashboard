@@ -64,6 +64,11 @@
 ---
 
 ## Logo Usage Rules
+
+**Logo Location:** `public/images/logo.png`
+
+The logo features a white lab mouse silhouette centered within corner bracket frame on teal background (`#25A882`).
+
 - On white background → use `#1A7F64` (Teal Primary) logo
 - On dark background → use `#25A882` (Teal Secondary) logo  
 - On teal background → use `#FFFFFF` (White) logo
