@@ -11,6 +11,7 @@ import {
   Rabbit,
   FlaskConical,
   Stethoscope,
+  Wrench,
   Heart,
   Users,
   Settings,
@@ -19,7 +20,8 @@ import {
   HelpCircle,
   UserPlus,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react'
 
 interface NavItem {
@@ -34,6 +36,7 @@ const navigation: NavItem[] = [
   { name: 'Animals', href: '/dashboard/animals', icon: Rabbit },
   { name: 'Experiments', href: '/dashboard/experiments', icon: FlaskConical },
   { name: 'Treatments', href: '/dashboard/treatments', icon: Stethoscope },
+  { name: 'Lab Tools', href: '/dashboard/tools', icon: Wrench },
   { name: 'Breeding', href: '/dashboard/breeding', icon: Heart },
   { name: 'Team', href: '/dashboard/team', icon: Users },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
@@ -139,22 +142,38 @@ export default function Sidebar({ user }: SidebarProps) {
 
             return (
               <div key={item.name} className="relative group">
-                <Link
-                  href={item.href}
-                  className={`flex items-center justify-center w-12 h-12 rounded-lg transition-colors ${
-                    isActive
-                      ? 'text-white'
-                      : 'hover:bg-gray-800'
-                  }`}
-                  style={isActive ? { backgroundColor: '#1A7F64' } : {}}
-                >
-                  <div
-                    style={!isActive ? { color: '#9CA3AF' } : { color: 'white' }}
-                    className="group-hover:text-white"
+                {item.href.startsWith('http') ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-12 h-12 rounded-lg transition-colors hover:bg-gray-800"
                   >
-                    <Icon className="w-5 h-5" />
-                  </div>
-                </Link>
+                    <div
+                      style={{ color: '#9CA3AF' }}
+                      className="group-hover:text-white"
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
+                  </a>
+                ) : (
+                  <Link
+                    href={item.href}
+                    className={`flex items-center justify-center w-12 h-12 rounded-lg transition-colors ${
+                      isActive
+                        ? 'text-white'
+                        : 'hover:bg-gray-800'
+                    }`}
+                    style={isActive ? { backgroundColor: '#1A7F64' } : {}}
+                  >
+                    <div
+                      style={!isActive ? { color: '#9CA3AF' } : { color: 'white' }}
+                      className="group-hover:text-white"
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
+                  </Link>
+                )}
 
                 {/* Tooltip */}
                 <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
@@ -347,6 +366,30 @@ export default function Sidebar({ user }: SidebarProps) {
               <div className="flex items-center">
                 <HelpCircle style={{ width: '15px', height: '15px', marginRight: '12px', color: '#9CA3AF' }} />
                 Help
+              </div>
+              <ChevronRight style={{ width: '15px', height: '15px', color: '#D1D5DB' }} />
+            </button>
+
+            <button
+              onClick={() => router.push('/dashboard/tools')}
+              className="w-full flex items-center justify-between font-body transition-colors hover:cursor-pointer"
+              style={{
+                color: '#374151',
+                backgroundColor: 'transparent',
+                padding: '8px 16px',
+                fontSize: '13px',
+                fontWeight: 400
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F9FAFB'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+              }}
+            >
+              <div className="flex items-center">
+                <Wrench style={{ width: '15px', height: '15px', marginRight: '12px', color: '#9CA3AF' }} />
+                Lab Tools
               </div>
               <ChevronRight style={{ width: '15px', height: '15px', color: '#D1D5DB' }} />
             </button>

@@ -14,9 +14,15 @@ const getPageTitle = (pathname: string): string => {
     '/dashboard/animals': 'Animals',
     '/dashboard/experiments': 'Experiments',
     '/dashboard/treatments': 'Treatments',
+    '/dashboard/tools': 'Lab Tools',
     '/dashboard/breeding': 'Breeding',
     '/dashboard/team': 'Team',
     '/dashboard/settings': 'Settings',
+  }
+
+  // Handle tools sub-routes
+  if (pathname.startsWith('/dashboard/tools/')) {
+    return 'Lab Tools'
   }
 
   return pathMap[pathname] || 'Dashboard'
