@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [error, setError] = useState('')
@@ -20,6 +21,23 @@ export default function LoginPage() {
     if (!email || !password) {
       setError('Please fill in all fields')
       return
+    }
+
+    if (isSignUp) {
+      if (!confirmPassword) {
+        setError('Please confirm your password')
+        return
+      }
+
+      if (password.length < 8) {
+        setError('Password must be at least 8 characters')
+        return
+      }
+
+      if (password !== confirmPassword) {
+        setError('Passwords do not match')
+        return
+      }
     }
 
     setIsLoading(true)
@@ -60,7 +78,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/auth/callback`
         }
       })
 
@@ -472,6 +490,25 @@ export default function LoginPage() {
                 />
               </div>
 
+              {isSignUp && (
+                <div>
+                  <label className="block font-body font-medium text-sm text-slate-800 mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 font-body"
+                    style={{'--tw-ring-color': '#E8F5F1'} as React.CSSProperties}
+                    onFocus={(e) => e.target.style.borderColor = '#1A7F64'}
+                    onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
+                    placeholder="••••••••"
+                  />
+                </div>
+              )}
+
               <button
                 onClick={handleEmailAuth}
                 disabled={isLoading}
@@ -495,6 +532,7 @@ export default function LoginPage() {
                 onClick={() => {
                   setIsSignUp(!isSignUp)
                   setError('')
+                  setConfirmPassword('')
                 }}
                 className="font-body text-sm text-slate-600 hover:opacity-80 transition-colors"
                 style={{color: '#1A7F64'} as React.CSSProperties}
