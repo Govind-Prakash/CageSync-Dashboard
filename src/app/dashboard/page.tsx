@@ -1,98 +1,82 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import SignOutButton from './sign-out-button'
+import { Archive, Rabbit, FlaskConical, Plus } from 'lucide-react'
 
-export default async function Dashboard() {
-  const supabase = await createClient()
-
-  const { data: { user }, error } = await supabase.auth.getUser()
-
-  if (error || !user) {
-    redirect('/login')
-  }
+export default function DashboardPage() {
+  const emptyStates = [
+    {
+      title: 'No cages yet',
+      description: 'Add your first cage to get started',
+      icon: Archive,
+    },
+    {
+      title: 'No animals yet',
+      description: 'Animals will appear once cages are created',
+      icon: Rabbit,
+    },
+    {
+      title: 'No experiments yet',
+      description: 'Create your first experiment',
+      icon: FlaskConical,
+    },
+  ]
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="py-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-display font-semibold text-3xl text-ink">
-                Welcome to CageSync
-              </h1>
-              <p className="font-body text-gray-500 mt-2">
-                Lab animal colony management dashboard
-              </p>
-            </div>
-            <SignOutButton />
-          </div>
-        </div>
+    <div>
+      {/* Empty State Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {emptyStates.map((item) => {
+          const Icon = item.icon
 
-        {/* User Info Card */}
-        <div className="bg-card rounded-xl border border-border shadow-sm p-6 mb-8">
-          <h2 className="font-display font-medium text-xl text-ink mb-4">
-            Account Information
-          </h2>
-          <div className="space-y-3">
-            <div>
-              <label className="block font-body font-medium text-sm text-ink mb-1">
-                Email
-              </label>
-              <p className="font-mono text-sm text-gray-500 bg-surface px-3 py-2 rounded-lg border">
-                {user.email}
-              </p>
-            </div>
-            <div>
-              <label className="block font-body font-medium text-sm text-ink mb-1">
-                User ID
-              </label>
-              <p className="font-mono text-sm text-gray-500 bg-surface px-3 py-2 rounded-lg border">
-                {user.id}
-              </p>
-            </div>
-            <div>
-              <label className="block font-body font-medium text-sm text-ink mb-1">
-                Last Sign In
-              </label>
-              <p className="font-mono text-sm text-gray-500 bg-surface px-3 py-2 rounded-lg border">
-                {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'N/A'}
-              </p>
-            </div>
-          </div>
-        </div>
+          return (
+            <div
+              key={item.title}
+              className="rounded-xl p-6 shadow-sm text-center"
+              style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
+            >
+              <div className="flex justify-center mb-3">
+                <div
+                  className="w-12 h-12 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: '#F8FAFB' }}
+                >
+                  <Icon className="w-6 h-6" style={{ color: '#1A7F64' }} />
+                </div>
+              </div>
 
-        {/* Getting Started */}
-        <div className="bg-card rounded-xl border border-border shadow-sm p-6">
-          <h2 className="font-display font-medium text-xl text-ink mb-4">
-            Getting Started
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-primary-surface rounded-lg p-4">
-              <h3 className="font-body font-medium text-primary-dark mb-2">
-                Setup Your Lab
+              <h3 className="font-display font-medium text-lg mb-2" style={{ color: '#1A1A2E' }}>
+                {item.title}
               </h3>
-              <p className="font-body text-sm text-gray-500">
-                Configure your laboratory settings and invite team members.
+
+              <p className="font-body text-sm mb-4" style={{ color: '#6B7280' }}>
+                {item.description}
               </p>
+
+              <button
+                className="inline-flex items-center px-3 py-2 rounded-lg font-body font-medium text-sm transition-colors hover:opacity-90"
+                style={{ backgroundColor: '#1A7F64', color: 'white' }}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add {item.title.split(' ')[1]}
+              </button>
             </div>
-            <div className="bg-amber-surface rounded-lg p-4">
-              <h3 className="font-body font-medium text-amber-dark mb-2">
-                Manage Colonies
-              </h3>
-              <p className="font-body text-sm text-gray-500">
-                Track your animal colonies, breeding pairs, and experiments.
-              </p>
-            </div>
-            <div className="bg-surface rounded-lg p-4 border border-border">
-              <h3 className="font-body font-medium text-ink mb-2">
-                Mobile App
-              </h3>
-              <p className="font-body text-sm text-gray-500">
-                Download the CageSync mobile app for QR scanning and logging.
-              </p>
-            </div>
-          </div>
+          )
+        })}
+      </div>
+
+      {/* Recent Activity Section */}
+      <div
+        className="rounded-xl p-6 shadow-sm"
+        style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
+      >
+        <h2 className="font-display font-medium text-xl mb-4" style={{ color: '#1A1A2E' }}>
+          Recent Activity
+        </h2>
+
+        <div
+          className="text-center py-12 rounded-lg border-2 border-dashed"
+          style={{ backgroundColor: '#F8FAFB', borderColor: '#E2E8F0' }}
+        >
+          <p className="font-body text-sm" style={{ color: '#6B7280' }}>
+            No recent activity yet. Start by adding cages and animals.
+          </p>
         </div>
       </div>
     </div>

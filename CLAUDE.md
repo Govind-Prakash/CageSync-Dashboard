@@ -133,8 +133,9 @@ cagesync-dashboard/
 - [x] Next.js project initialized
 - [x] Supabase client utilities created (client.ts, server.ts, middleware.ts)
 - [x] .env.local configured
+- [x] Dashboard shell (layout, sidebar, dynamic topbar)
+- [x] Cages page (complete with add cage modal)
 - [ ] Login page
-- [ ] Dashboard shell
 - [ ] Supabase SQL schema run
 - [ ] Auth flow tested end-to-end
 
@@ -161,6 +162,31 @@ SUPABASE_SECRET_KEY=your_secret_key
 
 ---
 
+## UI/UX Design Patterns
+
+### Page Title Pattern
+**RULE:** Page titles live ONLY in the topbar — never duplicate on the page content.
+
+- ✅ Dynamic topbar shows current page name (DynamicTopbar component)
+- ❌ Don't add `<h1>Page Name</h1>` to page content
+- ❌ Don't hardcode page titles in layout
+
+**Implementation:**
+```tsx
+// ✅ Good: Action buttons aligned right, no title
+<div className="flex items-center justify-end mb-6">
+  <AddButton />
+</div>
+
+// ❌ Bad: Duplicate title
+<div className="flex items-center justify-between mb-6">
+  <h1>Page Name</h1>
+  <AddButton />
+</div>
+```
+
+---
+
 ## Important Rules for Claude
 
 1. Always use brand colors from BRAND.md — never generic blue/gray defaults
@@ -170,3 +196,4 @@ SUPABASE_SECRET_KEY=your_secret_key
 5. All data mutations go through server actions or API routes — never call Supabase directly from client for writes
 6. RLS is always on — never use service role key on the frontend
 7. Keep components small and focused — no mega-components
+8. **Page titles ONLY in topbar** — never duplicate on page content
