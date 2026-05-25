@@ -89,15 +89,18 @@ export default function ToolsPage() {
       </div>
 
       {/* Tools Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         {filteredTools.map((tool) => {
           const Icon = tool.icon
 
           return (
             <div
               key={tool.id}
-              className="bg-white rounded-lg p-5 transition-all duration-200 hover:shadow-sm group"
-              style={{ border: '1px solid #E2E8F0' }}
+              className="bg-white rounded-lg p-4 transition-all duration-150 hover:shadow-sm group flex flex-col"
+              style={{
+                border: '1px solid #E2E8F0',
+                minHeight: '180px'
+              }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = '#1A7F64'
               }}
@@ -105,18 +108,35 @@ export default function ToolsPage() {
                 e.currentTarget.style.borderColor = '#E2E8F0'
               }}
             >
-              {/* Top Row: Icon and Tags */}
-              <div className="flex items-start justify-between mb-3">
-                <Icon className="w-5 h-5 flex-shrink-0" style={{ color: '#1A7F64' }} />
+              {/* Top Row: Icon + Tool Name + Tags */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: '#E8F5F1' }}
+                  >
+                    <Icon className="w-4.5 h-4.5" style={{ color: '#1A7F64', width: '18px', height: '18px' }} />
+                  </div>
+                  <h3
+                    className="font-display font-medium line-clamp-1"
+                    style={{
+                      color: '#1A1A2E',
+                      fontSize: '14px'
+                    }}
+                  >
+                    {tool.name}
+                  </h3>
+                </div>
                 <div className="flex gap-1 flex-wrap">
                   {tool.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded-full text-xs font-body"
+                      className="inline-flex rounded-full font-body"
                       style={{
                         backgroundColor: '#F3F4F6',
                         color: '#6B7280',
-                        fontSize: '11px'
+                        fontSize: '11px',
+                        padding: '2px 8px'
                       }}
                     >
                       {tag}
@@ -125,48 +145,42 @@ export default function ToolsPage() {
                 </div>
               </div>
 
-              {/* Tool Name */}
-              <h3
-                className="font-display font-medium text-base mb-1 line-clamp-1"
-                style={{
-                  color: '#1A1A2E',
-                  fontSize: '15px'
-                }}
-              >
-                {tool.name}
-              </h3>
-
               {/* Description */}
               <p
-                className="font-body text-sm mb-4 line-clamp-2"
+                className="font-body mt-2 line-clamp-2"
                 style={{
                   color: '#6B7280',
-                  fontSize: '13px',
-                  lineHeight: '1.4'
+                  fontSize: '12px',
+                  lineHeight: '1.4',
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical'
                 }}
               >
                 {tool.description}
               </p>
 
-              {/* Bottom Row: View Details and Open Tool */}
-              <div className="flex items-center justify-between">
+              {/* Bottom Row */}
+              <div className="flex items-center justify-between mt-auto">
                 <Link
                   href={tool.href}
-                  className="font-body text-sm transition-colors"
+                  className="font-body transition-colors"
                   style={{
                     color: '#1A7F64',
-                    fontSize: '13px'
+                    fontSize: '12px'
                   }}
                 >
                   View details
                 </Link>
                 <Link
                   href={tool.href}
-                  className="px-3.5 py-1.5 rounded-md font-body text-sm transition-colors"
+                  className="px-3 py-1 rounded-md font-body transition-colors"
                   style={{
                     backgroundColor: '#1A7F64',
                     color: 'white',
-                    fontSize: '13px'
+                    fontSize: '12px',
+                    padding: '5px 12px'
                   }}
                 >
                   Open Tool
