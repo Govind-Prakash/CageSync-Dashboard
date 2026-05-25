@@ -25,6 +25,7 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
+  // If user is NOT logged in AND trying to access a protected route → redirect to /login
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
@@ -34,6 +35,16 @@ export async function updateSession(request: NextRequest) {
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
+
+  // If user IS logged in AND trying to access /login → redirect to /dashboard
+  if (user && request.nextUrl.pathname.startsWith('/login')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
+  // If user IS logged in AND on /dashboard → let them through
+  // (This is handled by returning supabaseResponse)
 
   return supabaseResponse
 }
