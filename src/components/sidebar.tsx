@@ -42,6 +42,11 @@ const navigation: NavItem[] = [
 interface SidebarProps {
   user: {
     email?: string
+    user_metadata?: {
+      avatar_url?: string
+      picture?: string
+      full_name?: string
+    }
   }
 }
 
@@ -65,6 +70,10 @@ export default function Sidebar({ user }: SidebarProps) {
 
   // Get full name from email (for display)
   const getDisplayName = (email: string): string => {
+    // First try to get name from user metadata
+    const fullName = user.user_metadata?.full_name
+    if (fullName) return fullName
+
     if (!email) return 'Govind Prakash'
     const name = email.split('@')[0]
     const parts = name.split(/[._-]/)
@@ -72,6 +81,11 @@ export default function Sidebar({ user }: SidebarProps) {
       return parts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
     }
     return name.charAt(0).toUpperCase() + name.slice(1)
+  }
+
+  // Get profile picture URL
+  const getProfilePicture = (): string | null => {
+    return user.user_metadata?.avatar_url || user.user_metadata?.picture || null
   }
 
   // Close profile menu when clicking outside
@@ -156,13 +170,21 @@ export default function Sidebar({ user }: SidebarProps) {
           <div className="flex items-center justify-center">
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-display font-semibold hover:opacity-90 transition-opacity"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-display font-semibold hover:opacity-90 transition-opacity overflow-hidden"
               style={{
-                backgroundColor: '#1A7F64',
+                backgroundColor: getProfilePicture() ? 'transparent' : '#1A7F64',
                 fontSize: '12px'
               }}
             >
-              {getUserInitials(user.email || '')}
+              {getProfilePicture() ? (
+                <img
+                  src={getProfilePicture()!}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              ) : (
+                getUserInitials(user.email || '')
+              )}
             </button>
           </div>
         </div>
@@ -193,9 +215,9 @@ export default function Sidebar({ user }: SidebarProps) {
           }}>
             <div className="flex items-center space-x-3">
               <div
-                className="rounded-full flex items-center justify-center font-display font-semibold"
+                className="rounded-full flex items-center justify-center font-display font-semibold overflow-hidden"
                 style={{
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: getProfilePicture() ? 'transparent' : '#FFFFFF',
                   color: '#1A7F64',
                   width: '48px',
                   height: '48px',
@@ -203,7 +225,15 @@ export default function Sidebar({ user }: SidebarProps) {
                   boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                 }}
               >
-                {getUserInitials(user.email || '')}
+                {getProfilePicture() ? (
+                  <img
+                    src={getProfilePicture()!}
+                    alt="Profile"
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  getUserInitials(user.email || '')
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div
