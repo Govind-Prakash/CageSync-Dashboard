@@ -184,19 +184,56 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* CageSync Network: Scan. Log. Sync. */}
+          {/* CageSync Animated Network: Scan. Log. Sync. */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <style>
+                {`
+                  @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(8px, -12px); } }
+                  @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-6px, 10px); } }
+                  @keyframes float3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(10px, 8px); } }
+                  @keyframes float4 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-8px, -6px); } }
+                  @keyframes float5 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(12px, -8px); } }
+                  @keyframes float6 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-10px, 6px); } }
+                  @keyframes orbit1 { 0% { transform: rotate(0deg) translateX(15px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(15px) rotate(-360deg); } }
+                  @keyframes orbit2 { 0% { transform: rotate(0deg) translateX(12px) rotate(0deg); } 100% { transform: rotate(-360deg) translateX(12px) rotate(360deg); } }
 
-            {/* Network Connection Lines */}
-            <path d="M70,120 Q150,140 230,180" stroke="rgba(26, 127, 100, 0.025)" strokeWidth="1.5" fill="none" />
-            <path d="M230,180 Q280,220 320,280" stroke="rgba(37, 168, 130, 0.03)" strokeWidth="1.5" fill="none" />
-            <path d="M320,280 Q250,350 180,420" stroke="rgba(26, 127, 100, 0.025)" strokeWidth="1.5" fill="none" />
-            <path d="M180,420 Q140,380 110,340" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1.5" fill="none" />
-            <path d="M110,340 Q80,250 70,120" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
-            <path d="M350,150 Q300,200 230,180" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1" fill="none" />
+                  .node1 { animation: float1 14s ease-in-out infinite; }
+                  .node2 { animation: float2 16s ease-in-out infinite 2s; }
+                  .node3 { animation: float3 12s ease-in-out infinite 4s; }
+                  .node4 { animation: float4 18s ease-in-out infinite 1s; }
+                  .node5 { animation: float5 15s ease-in-out infinite 3s; }
+                  .node6 { animation: float6 13s ease-in-out infinite 5s; }
+                  .hub { animation: orbit1 20s linear infinite; }
+                  .satellite { animation: orbit2 25s linear infinite reverse; }
+                `}
+              </style>
+            </defs>
 
-            {/* QR/Barcode Icons - "SCAN" */}
-            <g transform="translate(65, 115)" fill="rgba(26, 127, 100, 0.04)">
+            {/* Network Connection Lines - dense web structure */}
+            <g>
+              {/* Primary connections */}
+              <path d="M70,120 Q150,140 230,180" stroke="rgba(26, 127, 100, 0.025)" strokeWidth="1.5" fill="none" />
+              <path d="M230,180 Q280,220 320,280" stroke="rgba(37, 168, 130, 0.03)" strokeWidth="1.5" fill="none" />
+              <path d="M320,280 Q250,350 180,420" stroke="rgba(26, 127, 100, 0.025)" strokeWidth="1.5" fill="none" />
+              <path d="M180,420 Q140,380 110,340" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1.5" fill="none" />
+              <path d="M110,340 Q80,250 70,120" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M350,150 Q300,200 230,180" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1" fill="none" />
+
+              {/* Additional web connections */}
+              <path d="M40,200 Q120,220 180,260" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M180,260 Q240,300 290,350" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1" fill="none" />
+              <path d="M290,350 Q320,400 340,450" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M160,80 Q200,120 230,180" stroke="rgba(37, 168, 130, 0.025)" strokeWidth="1" fill="none" />
+              <path d="M300,100 Q320,140 350,150" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M120,480 Q180,450 230,420" stroke="rgba(37, 168, 130, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M40,350 Q80,320 110,340" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M270,460 Q310,420 340,380" stroke="rgba(37, 168, 130, 0.02)" strokeWidth="1" fill="none" />
+              <path d="M90,60 Q130,90 160,80" stroke="rgba(26, 127, 100, 0.02)" strokeWidth="1" fill="none" />
+            </g>
+
+            {/* Animated QR/Barcode Icons - "SCAN" */}
+            <g className="node1" transform="translate(65, 115)" fill="rgba(26, 127, 100, 0.04)">
               <rect x="0" y="0" width="2" height="10" />
               <rect x="3" y="0" width="1" height="10" />
               <rect x="5" y="0" width="3" height="10" />
@@ -204,15 +241,40 @@ export default function LoginPage() {
               <rect x="11" y="0" width="2" height="10" />
             </g>
 
-            <g transform="translate(345, 145)" fill="rgba(37, 168, 130, 0.045)">
+            <g className="node6" transform="translate(345, 145)" fill="rgba(37, 168, 130, 0.045)">
               <rect x="0" y="0" width="1" height="8" />
               <rect x="2" y="0" width="2" height="8" />
               <rect x="5" y="0" width="1" height="8" />
               <rect x="7" y="0" width="3" height="8" />
             </g>
 
-            {/* Mouse Silhouettes - "LOG" */}
-            <g transform="translate(225, 175) scale(0.25)" fill="rgba(26, 127, 100, 0.035)">
+            <g className="node2" transform="translate(155, 75)" fill="rgba(26, 127, 100, 0.035)">
+              <rect x="0" y="0" width="1" height="6" />
+              <rect x="2" y="0" width="2" height="6" />
+              <rect x="5" y="0" width="1" height="6" />
+              <rect x="7" y="0" width="2" height="6" />
+            </g>
+
+            <g className="node4" transform="translate(35, 195)" fill="rgba(37, 168, 130, 0.04)">
+              <rect x="0" y="0" width="2" height="8" />
+              <rect x="3" y="0" width="1" height="8" />
+              <rect x="5" y="0" width="2" height="8" />
+            </g>
+
+            <g className="node5" transform="translate(295, 95)" fill="rgba(26, 127, 100, 0.04)">
+              <rect x="0" y="0" width="1" height="7" />
+              <rect x="2" y="0" width="3" height="7" />
+              <rect x="6" y="0" width="1" height="7" />
+            </g>
+
+            <g className="node3" transform="translate(85, 55)" fill="rgba(37, 168, 130, 0.035)">
+              <rect x="0" y="0" width="2" height="6" />
+              <rect x="3" y="0" width="1" height="6" />
+              <rect x="5" y="0" width="1" height="6" />
+            </g>
+
+            {/* Animated Mouse Silhouettes - "LOG" */}
+            <g className="hub" transform="translate(225, 175) scale(0.25)" fill="rgba(26, 127, 100, 0.035)">
               <ellipse cx="10" cy="8" rx="8" ry="5" />
               <circle cx="6" cy="6" r="1" />
               <circle cx="14" cy="6" r="1" />
@@ -220,7 +282,7 @@ export default function LoginPage() {
               <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
             </g>
 
-            <g transform="translate(315, 275) scale(0.2)" fill="rgba(37, 168, 130, 0.04)">
+            <g className="node4" transform="translate(315, 275) scale(0.2)" fill="rgba(37, 168, 130, 0.04)">
               <ellipse cx="10" cy="8" rx="8" ry="5" />
               <circle cx="6" cy="6" r="1" />
               <circle cx="14" cy="6" r="1" />
@@ -228,17 +290,63 @@ export default function LoginPage() {
               <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
             </g>
 
-            {/* Data Points/Circles - "SYNC" */}
-            <circle cx="110" cy="340" r="8" fill="rgba(26, 127, 100, 0.04)" stroke="rgba(26, 127, 100, 0.06)" strokeWidth="1" />
-            <circle cx="180" cy="420" r="6" fill="rgba(37, 168, 130, 0.045)" stroke="rgba(37, 168, 130, 0.065)" strokeWidth="1" />
+            <g className="node1" transform="translate(175, 255) scale(0.22)" fill="rgba(26, 127, 100, 0.038)">
+              <ellipse cx="10" cy="8" rx="8" ry="5" />
+              <circle cx="6" cy="6" r="1" />
+              <circle cx="14" cy="6" r="1" />
+              <ellipse cx="18" cy="10" rx="3" ry="2" />
+              <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
+            </g>
 
-            {/* Central Hub Node */}
-            <circle cx="230" cy="180" r="4" fill="rgba(26, 127, 100, 0.06)" stroke="rgba(26, 127, 100, 0.08)" strokeWidth="1.5" />
+            <g className="node6" transform="translate(285, 345) scale(0.18)" fill="rgba(37, 168, 130, 0.04)">
+              <ellipse cx="10" cy="8" rx="8" ry="5" />
+              <circle cx="6" cy="6" r="1" />
+              <circle cx="14" cy="6" r="1" />
+              <ellipse cx="18" cy="10" rx="3" ry="2" />
+              <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
+            </g>
 
-            {/* Additional Network Nodes */}
-            <circle cx="320" cy="280" r="3" fill="rgba(37, 168, 130, 0.05)" />
-            <circle cx="70" cy="120" r="3" fill="rgba(26, 127, 100, 0.05)" />
-            <circle cx="350" cy="150" r="2" fill="rgba(37, 168, 130, 0.06)" />
+            <g className="node2" transform="translate(115, 475) scale(0.2)" fill="rgba(26, 127, 100, 0.035)">
+              <ellipse cx="10" cy="8" rx="8" ry="5" />
+              <circle cx="6" cy="6" r="1" />
+              <circle cx="14" cy="6" r="1" />
+              <ellipse cx="18" cy="10" rx="3" ry="2" />
+              <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
+            </g>
+
+            <g className="node5" transform="translate(335, 375) scale(0.19)" fill="rgba(37, 168, 130, 0.042)">
+              <ellipse cx="10" cy="8" rx="8" ry="5" />
+              <circle cx="6" cy="6" r="1" />
+              <circle cx="14" cy="6" r="1" />
+              <ellipse cx="18" cy="10" rx="3" ry="2" />
+              <path d="M2,10 Q0,12 2,14 Q4,12 2,10" />
+            </g>
+
+            {/* Animated Data Points/Circles - "SYNC" */}
+            <circle className="node5" cx="110" cy="340" r="8" fill="rgba(26, 127, 100, 0.04)" stroke="rgba(26, 127, 100, 0.06)" strokeWidth="1" />
+            <circle className="node3" cx="180" cy="420" r="6" fill="rgba(37, 168, 130, 0.045)" stroke="rgba(37, 168, 130, 0.065)" strokeWidth="1" />
+
+            {/* Animated Central Hub Node */}
+            <circle className="satellite" cx="230" cy="180" r="4" fill="rgba(26, 127, 100, 0.06)" stroke="rgba(26, 127, 100, 0.08)" strokeWidth="1.5" />
+
+            {/* Animated Additional Network Nodes */}
+            <circle className="node4" cx="320" cy="280" r="3" fill="rgba(37, 168, 130, 0.05)" />
+            <circle className="node1" cx="70" cy="120" r="3" fill="rgba(26, 127, 100, 0.05)" />
+            <circle className="node2" cx="350" cy="150" r="2" fill="rgba(37, 168, 130, 0.06)" />
+
+            {/* Additional Web Nodes */}
+            <circle className="node1" cx="40" cy="200" r="5" fill="rgba(26, 127, 100, 0.04)" stroke="rgba(26, 127, 100, 0.05)" strokeWidth="1" />
+            <circle className="node3" cx="180" cy="260" r="4" fill="rgba(37, 168, 130, 0.045)" stroke="rgba(37, 168, 130, 0.055)" strokeWidth="1" />
+            <circle className="node6" cx="290" cy="350" r="3" fill="rgba(26, 127, 100, 0.05)" />
+            <circle className="node2" cx="340" cy="450" r="4" fill="rgba(37, 168, 130, 0.04)" stroke="rgba(37, 168, 130, 0.05)" strokeWidth="1" />
+            <circle className="node4" cx="160" cy="80" r="3" fill="rgba(26, 127, 100, 0.045)" />
+            <circle className="node5" cx="300" cy="100" r="2" fill="rgba(37, 168, 130, 0.05)" />
+            <circle className="node1" cx="120" cy="480" r="3" fill="rgba(26, 127, 100, 0.04)" />
+            <circle className="node3" cx="40" cy="350" r="4" fill="rgba(37, 168, 130, 0.045)" stroke="rgba(37, 168, 130, 0.055)" strokeWidth="1" />
+            <circle className="node6" cx="270" cy="460" r="3" fill="rgba(26, 127, 100, 0.04)" />
+            <circle className="node2" cx="340" cy="380" r="2" fill="rgba(37, 168, 130, 0.05)" />
+            <circle className="node4" cx="90" cy="60" r="3" fill="rgba(26, 127, 100, 0.045)" />
+            <circle className="hub" cx="230" cy="420" r="2" fill="rgba(37, 168, 130, 0.04)" />
 
           </svg>
         </div>
