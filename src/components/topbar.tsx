@@ -41,27 +41,27 @@ export default function Topbar({ currentPageTitle, userEmail }: TopbarProps) {
       </div>
 
       {/* Right side - Tasks, Calendar, Notifications, User, Sign Out */}
-      <div className="flex items-center space-x-4">
-        {/* CheckSquare with Amber Badge */}
+      <div className="flex items-center space-x-5">
+        {/* CheckSquare with Red Badge */}
         <div className="relative">
-          <CheckSquare className="w-5 h-5" style={{ color: '#6B7280' }} />
+          <CheckSquare className="w-5 h-5" style={{ color: '#9CA3AF' }} />
           <div
-            className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-medium"
-            style={{ backgroundColor: '#F5A623' }}
+            className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"
+            style={{ backgroundColor: '#E53E3E', fontSize: '10px' }}
           >
             2
           </div>
         </div>
 
         {/* Calendar */}
-        <Calendar className="w-5 h-5" style={{ color: '#6B7280' }} />
+        <Calendar className="w-5 h-5" style={{ color: '#9CA3AF' }} />
 
         {/* Notification Bell with Red Badge */}
         <div className="relative">
-          <Bell className="w-5 h-5" style={{ color: '#6B7280' }} />
+          <Bell className="w-5 h-5" style={{ color: '#9CA3AF' }} />
           <div
-            className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-medium"
-            style={{ backgroundColor: '#E53E3E' }}
+            className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"
+            style={{ backgroundColor: '#E53E3E', fontSize: '10px' }}
           >
             3
           </div>
@@ -85,7 +85,7 @@ export default function Topbar({ currentPageTitle, userEmail }: TopbarProps) {
           {isSigningOut ? (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
           ) : (
-            <LogOut className="w-5 h-5" style={{ color: '#6B7280' }} />
+            <LogOut className="w-5 h-5" style={{ color: '#9CA3AF' }} />
           )}
         </button>
       </div>
