@@ -39,7 +39,6 @@ const navigation: NavItem[] = [
   { name: 'Lab Tools', href: '/dashboard/tools', icon: Wrench },
   { name: 'Breeding', href: '/dashboard/breeding', icon: Heart },
   { name: 'Team', href: '/dashboard/team', icon: Users },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 
 interface SidebarProps {
@@ -305,6 +304,7 @@ export default function Sidebar({ user }: SidebarProps) {
           {/* Menu items */}
           <div>
             <button
+              onClick={() => router.push('/dashboard/settings')}
               className="w-full flex items-center justify-between font-body transition-colors hover:cursor-pointer"
               style={{
                 color: '#374151',

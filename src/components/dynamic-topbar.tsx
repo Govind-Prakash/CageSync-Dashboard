@@ -3,10 +3,6 @@
 import { usePathname } from 'next/navigation'
 import Topbar from './topbar'
 
-interface DynamicTopbarProps {
-  userEmail: string
-}
-
 const getPageTitle = (pathname: string): string => {
   const pathMap: Record<string, string> = {
     '/dashboard': 'Dashboard',
@@ -28,14 +24,13 @@ const getPageTitle = (pathname: string): string => {
   return pathMap[pathname] || 'Dashboard'
 }
 
-export default function DynamicTopbar({ userEmail }: DynamicTopbarProps) {
+export default function DynamicTopbar() {
   const pathname = usePathname()
   const pageTitle = getPageTitle(pathname)
 
   return (
     <Topbar
       currentPageTitle={pageTitle}
-      userEmail={userEmail}
     />
   )
 }

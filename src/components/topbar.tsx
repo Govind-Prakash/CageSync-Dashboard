@@ -1,33 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Bell, LogOut, Calendar, CheckSquare } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { Bell, Calendar, CheckSquare } from 'lucide-react'
 
 interface TopbarProps {
   currentPageTitle: string
-  userEmail: string
 }
 
-export default function Topbar({ currentPageTitle, userEmail }: TopbarProps) {
-  const router = useRouter()
-  const supabase = createClient()
-  const [isSigningOut, setIsSigningOut] = useState(false)
-
-  const handleSignOut = async () => {
-    setIsSigningOut(true)
-    try {
-      await supabase.auth.signOut()
-      router.push('/login')
-      router.refresh()
-    } catch (error) {
-      console.error('Error signing out:', error)
-    } finally {
-      setIsSigningOut(false)
-    }
-  }
-
+export default function Topbar({ currentPageTitle }: TopbarProps) {
   return (
     <div
       className="h-14 w-full flex items-center justify-between px-6 border-b"
@@ -40,7 +19,7 @@ export default function Topbar({ currentPageTitle, userEmail }: TopbarProps) {
         </h1>
       </div>
 
-      {/* Right side - Tasks, Calendar, Notifications, User, Sign Out */}
+      {/* Right side - Tasks, Calendar, Notifications */}
       <div className="flex items-center space-x-5">
         {/* CheckSquare with Red Badge */}
         <div className="relative">
@@ -67,27 +46,6 @@ export default function Topbar({ currentPageTitle, userEmail }: TopbarProps) {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-6" style={{ backgroundColor: '#E2E8F0' }}></div>
-
-        {/* User Email */}
-        <span className="font-body text-sm" style={{ color: '#6B7280' }}>
-          {userEmail}
-        </span>
-
-        {/* Sign Out Button */}
-        <button
-          onClick={handleSignOut}
-          disabled={isSigningOut}
-          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
-          title="Sign out"
-        >
-          {isSigningOut ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
-          ) : (
-            <LogOut className="w-5 h-5" style={{ color: '#9CA3AF' }} />
-          )}
-        </button>
       </div>
     </div>
   )

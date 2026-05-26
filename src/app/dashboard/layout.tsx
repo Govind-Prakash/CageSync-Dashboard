@@ -26,9 +26,7 @@ export default async function DashboardLayout({
       {/* Main content area with topbar */}
       <div className="pl-16 flex flex-col min-h-screen">
         {/* Top bar */}
-        <DynamicTopbar
-          userEmail={user.email || ''}
-        />
+        <DynamicTopbar />
 
         {/* Main content */}
         <main className="flex-1" style={{ backgroundColor: '#F8FAFB' }}>
