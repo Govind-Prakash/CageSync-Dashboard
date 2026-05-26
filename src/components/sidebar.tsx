@@ -12,7 +12,6 @@ import {
   FlaskConical,
   Stethoscope,
   Wrench,
-  Heart,
   Users,
   Settings,
   Building2,
@@ -21,7 +20,8 @@ import {
   UserPlus,
   LogOut,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Heart
 } from 'lucide-react'
 
 interface NavItem {

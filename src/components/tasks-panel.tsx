@@ -357,7 +357,7 @@ export default function TasksPanel({ isOpen, onClose }: TasksPanelProps) {
 
       {/* Footer */}
       <div
-        className="px-3 py-2 border-t flex items-center justify-between"
+        className="px-3 py-2 border-t text-center"
         style={{ borderColor: '#E2E8F0' }}
       >
         <span
@@ -365,13 +365,6 @@ export default function TasksPanel({ isOpen, onClose }: TasksPanelProps) {
         >
           {todayTasksCount} tasks due today
         </span>
-        <button
-          onClick={handleOpenFullTasks}
-          className="text-primary hover:underline transition-colors"
-          style={{ fontSize: '11px', color: '#1A7F64' }}
-        >
-          View all →
-        </button>
       </div>
     </div>
   )

@@ -282,19 +282,6 @@ export default function CalendarPanel({ isOpen, onClose }: CalendarPanelProps) {
         </div>
       </div>
 
-      {/* Footer */}
-      <div
-        className="border-t px-3 py-2 text-center"
-        style={{ borderColor: '#E2E8F0' }}
-      >
-        <button
-          onClick={handleOpenFullCalendar}
-          className="text-primary hover:underline transition-colors"
-          style={{ fontSize: '12px', color: '#1A7F64' }}
-        >
-          Open full calendar →
-        </button>
-      </div>
     </div>
   )
 }

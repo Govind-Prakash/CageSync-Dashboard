@@ -70,7 +70,7 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
             className="p-1 hover:bg-gray-50 rounded transition-colors"
             title="Connect Google Sheets in Settings → Integrations"
           >
-            <CloudOff className="w-4 h-4" style={{ color: '#9CA3AF' }} />
+            <CloudOff className="w-5 h-5" style={{ color: '#9CA3AF' }} />
           </button>
         )
 
@@ -78,18 +78,10 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
         return (
           <button
             onClick={handleSyncClick}
-            className="flex items-center border rounded-md font-body transition-colors hover:border-[#1A7F64] hover:text-[#1A7F64] group"
-            style={{
-              padding: '5px 10px',
-              gap: '6px',
-              borderColor: '#E2E8F0',
-              backgroundColor: 'white',
-              color: '#6B7280',
-              fontSize: '13px'
-            }}
+            className="p-1 hover:bg-gray-50 rounded transition-colors"
+            title="Sync to Google Sheets"
           >
-            <RefreshCw className="w-4 h-4 group-hover:text-[#1A7F64]" style={{ color: '#6B7280' }} />
-            <span className="group-hover:text-[#1A7F64]">Sync</span>
+            <RefreshCw className="w-5 h-5" style={{ color: '#9CA3AF' }} />
           </button>
         )
 
@@ -97,37 +89,22 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
         return (
           <button
             disabled
-            className="flex items-center border rounded-md font-body cursor-not-allowed"
-            style={{
-              padding: '5px 10px',
-              gap: '6px',
-              borderColor: '#E2E8F0',
-              backgroundColor: 'white',
-              color: '#9CA3AF',
-              fontSize: '13px'
-            }}
+            className="p-1 rounded cursor-not-allowed"
+            title="Syncing..."
           >
-            <RefreshCw className="w-4 h-4 animate-spin" style={{ color: '#9CA3AF' }} />
-            <span>Syncing...</span>
+            <RefreshCw className="w-5 h-5 animate-spin" style={{ color: '#9CA3AF' }} />
           </button>
         )
 
       case 'synced':
         return (
-          <div
-            className="flex items-center border rounded-md font-body"
-            style={{
-              padding: '5px 10px',
-              gap: '6px',
-              borderColor: '#E8F5F1',
-              backgroundColor: '#E8F5F1',
-              color: '#1A7F64',
-              fontSize: '13px'
-            }}
+          <button
+            onClick={handleSyncClick}
+            className="p-1 hover:bg-gray-50 rounded transition-colors"
+            title="Synced successfully"
           >
-            <CheckCircle className="w-4 h-4" style={{ color: '#1A7F64' }} />
-            <span>Synced</span>
-          </div>
+            <CheckCircle className="w-5 h-5" style={{ color: '#1A7F64' }} />
+          </button>
         )
 
       default:
@@ -148,9 +125,11 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
       </div>
 
       {/* Right side - Sync, Tasks, Calendar, Notifications */}
-      <div className="flex items-center space-x-5">
+      <div className="flex items-center space-x-4">
         {/* Sync Button */}
-        {renderSyncButton()}
+        <div className="relative">
+          {renderSyncButton()}
+        </div>
 
         {/* CheckSquare with Red Badge */}
         <div className="relative">
@@ -197,7 +176,7 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
             className="p-1 hover:bg-gray-50 rounded transition-colors"
             title="Notifications"
           >
-            <Bell className="w-5 h-5" style={{ color: '#9CA3AF' }} />
+            <Bell className="w-5 h-5" style={{ color: '#9CA3AF', transform: 'translateY(0.5px)' }} />
             {!notificationsOpen && (
               <div
                 className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"

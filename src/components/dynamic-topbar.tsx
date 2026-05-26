@@ -17,6 +17,8 @@ const getPageTitle = (pathname: string): string => {
     '/dashboard/tools': 'Lab Tools',
     '/dashboard/breeding': 'Breeding',
     '/dashboard/team': 'Team',
+    '/dashboard/calendar': 'Calendar',
+    '/dashboard/tasks': 'Tasks',
     '/dashboard/settings': 'Settings',
   }
 
