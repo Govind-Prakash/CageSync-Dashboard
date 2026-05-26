@@ -141,9 +141,7 @@ export default function LoginPage() {
             <div className="eyebrow">For animal research labs</div>
             <h1 className="hero-title">
               Scan cages.<br/>
-              Sync sheets.<br/>
-              <br/>
-              <span className="hero-accent">Pass audits.</span>
+              Sync sheets. <span className="hero-accent">Pass audits.</span>
             </h1>
             <p className="hero-sub">
               CageSync turns any phone into a vivarium scanner. Every read updates your Google Sheet and your IACUC audit trail, in real time.
