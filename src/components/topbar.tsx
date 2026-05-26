@@ -1,15 +1,143 @@
 'use client'
 
-import { Bell, Calendar, CheckSquare } from 'lucide-react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Bell, Calendar, CheckSquare, CloudOff, RefreshCw, CheckCircle } from 'lucide-react'
+import NotificationsPanel from './notifications-panel'
+import TasksPanel from './tasks-panel'
+import CalendarPanel from './calendar-panel'
 
 interface TopbarProps {
   currentPageTitle: string
+  onToastShow?: (variant: 'success' | 'error', title: string, message: string) => void
 }
 
-export default function Topbar({ currentPageTitle }: TopbarProps) {
+type SyncState = 'disconnected' | 'idle' | 'syncing' | 'synced'
+
+export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
+  const router = useRouter()
+  const [syncState, setSyncState] = useState<SyncState>('disconnected')
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [tasksOpen, setTasksOpen] = useState(false)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+
+  const handleNotificationsToggle = () => {
+    setNotificationsOpen(!notificationsOpen)
+    if (tasksOpen) setTasksOpen(false) // Close tasks if open
+    if (calendarOpen) setCalendarOpen(false) // Close calendar if open
+  }
+
+  const handleTasksToggle = () => {
+    setTasksOpen(!tasksOpen)
+    if (notificationsOpen) setNotificationsOpen(false) // Close notifications if open
+    if (calendarOpen) setCalendarOpen(false) // Close calendar if open
+  }
+
+  const handleCalendarToggle = () => {
+    setCalendarOpen(!calendarOpen)
+    if (notificationsOpen) setNotificationsOpen(false) // Close notifications if open
+    if (tasksOpen) setTasksOpen(false) // Close tasks if open
+  }
+
+  const handleSyncClick = () => {
+    if (syncState === 'disconnected') {
+      router.push('/dashboard/settings')
+      return
+    }
+
+    if (syncState === 'idle') {
+      setSyncState('syncing')
+
+      // Simulate sync process
+      setTimeout(() => {
+        setSyncState('synced')
+        onToastShow?.('success', 'Synced to Google Sheets', 'Records updated successfully')
+
+        // Auto return to idle after 3 seconds
+        setTimeout(() => {
+          setSyncState('idle')
+        }, 3000)
+      }, 2000)
+    }
+  }
+
+  const renderSyncButton = () => {
+    switch (syncState) {
+      case 'disconnected':
+        return (
+          <button
+            onClick={handleSyncClick}
+            className="p-1 hover:bg-gray-50 rounded transition-colors"
+            title="Connect Google Sheets in Settings → Integrations"
+          >
+            <CloudOff className="w-4 h-4" style={{ color: '#9CA3AF' }} />
+          </button>
+        )
+
+      case 'idle':
+        return (
+          <button
+            onClick={handleSyncClick}
+            className="flex items-center border rounded-md font-body transition-colors hover:border-[#1A7F64] hover:text-[#1A7F64] group"
+            style={{
+              padding: '5px 10px',
+              gap: '6px',
+              borderColor: '#E2E8F0',
+              backgroundColor: 'white',
+              color: '#6B7280',
+              fontSize: '13px'
+            }}
+          >
+            <RefreshCw className="w-4 h-4 group-hover:text-[#1A7F64]" style={{ color: '#6B7280' }} />
+            <span className="group-hover:text-[#1A7F64]">Sync</span>
+          </button>
+        )
+
+      case 'syncing':
+        return (
+          <button
+            disabled
+            className="flex items-center border rounded-md font-body cursor-not-allowed"
+            style={{
+              padding: '5px 10px',
+              gap: '6px',
+              borderColor: '#E2E8F0',
+              backgroundColor: 'white',
+              color: '#9CA3AF',
+              fontSize: '13px'
+            }}
+          >
+            <RefreshCw className="w-4 h-4 animate-spin" style={{ color: '#9CA3AF' }} />
+            <span>Syncing...</span>
+          </button>
+        )
+
+      case 'synced':
+        return (
+          <div
+            className="flex items-center border rounded-md font-body"
+            style={{
+              padding: '5px 10px',
+              gap: '6px',
+              borderColor: '#E8F5F1',
+              backgroundColor: '#E8F5F1',
+              color: '#1A7F64',
+              fontSize: '13px'
+            }}
+          >
+            <CheckCircle className="w-4 h-4" style={{ color: '#1A7F64' }} />
+            <span>Synced</span>
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
   return (
     <div
-      className="h-14 w-full flex items-center justify-between px-6 border-b"
+      className="relative h-14 w-full flex items-center justify-between px-6 border-b"
       style={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0' }}
     >
       {/* Left side - Page Title only */}
@@ -19,31 +147,71 @@ export default function Topbar({ currentPageTitle }: TopbarProps) {
         </h1>
       </div>
 
-      {/* Right side - Tasks, Calendar, Notifications */}
+      {/* Right side - Sync, Tasks, Calendar, Notifications */}
       <div className="flex items-center space-x-5">
+        {/* Sync Button */}
+        {renderSyncButton()}
+
         {/* CheckSquare with Red Badge */}
         <div className="relative">
-          <CheckSquare className="w-5 h-5" style={{ color: '#9CA3AF' }} />
-          <div
-            className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"
-            style={{ backgroundColor: '#E53E3E', fontSize: '10px' }}
+          <button
+            onClick={handleTasksToggle}
+            className="p-1 hover:bg-gray-50 rounded transition-colors"
+            title="Tasks & Reminders"
           >
-            2
-          </div>
+            <CheckSquare className="w-5 h-5" style={{ color: '#9CA3AF' }} />
+            <div
+              className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"
+              style={{ backgroundColor: '#E53E3E', fontSize: '10px' }}
+            >
+              2
+            </div>
+          </button>
+
+          <TasksPanel
+            isOpen={tasksOpen}
+            onClose={() => setTasksOpen(false)}
+          />
         </div>
 
-        {/* Calendar */}
-        <Calendar className="w-5 h-5" style={{ color: '#9CA3AF' }} />
+        {/* Colony Calendar */}
+        <div className="relative">
+          <button
+            onClick={handleCalendarToggle}
+            className="p-1 hover:bg-gray-50 rounded transition-colors"
+            title="Colony Calendar"
+          >
+            <Calendar className="w-5 h-5" style={{ color: '#9CA3AF' }} />
+          </button>
+
+          <CalendarPanel
+            isOpen={calendarOpen}
+            onClose={() => setCalendarOpen(false)}
+          />
+        </div>
 
         {/* Notification Bell with Red Badge */}
         <div className="relative">
-          <Bell className="w-5 h-5" style={{ color: '#9CA3AF' }} />
-          <div
-            className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"
-            style={{ backgroundColor: '#E53E3E', fontSize: '10px' }}
+          <button
+            onClick={handleNotificationsToggle}
+            className="p-1 hover:bg-gray-50 rounded transition-colors"
+            title="Notifications"
           >
-            3
-          </div>
+            <Bell className="w-5 h-5" style={{ color: '#9CA3AF' }} />
+            {!notificationsOpen && (
+              <div
+                className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"
+                style={{ backgroundColor: '#E53E3E', fontSize: '10px' }}
+              >
+                3
+              </div>
+            )}
+          </button>
+
+          <NotificationsPanel
+            isOpen={notificationsOpen}
+            onClose={() => setNotificationsOpen(false)}
+          />
         </div>
 
       </div>

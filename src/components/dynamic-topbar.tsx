@@ -3,6 +3,10 @@
 import { usePathname } from 'next/navigation'
 import Topbar from './topbar'
 
+interface DynamicTopbarProps {
+  onToastShow?: (variant: 'success' | 'error', title: string, message: string) => void
+}
+
 const getPageTitle = (pathname: string): string => {
   const pathMap: Record<string, string> = {
     '/dashboard': 'Dashboard',
@@ -24,13 +28,14 @@ const getPageTitle = (pathname: string): string => {
   return pathMap[pathname] || 'Dashboard'
 }
 
-export default function DynamicTopbar() {
+export default function DynamicTopbar({ onToastShow }: DynamicTopbarProps) {
   const pathname = usePathname()
   const pageTitle = getPageTitle(pathname)
 
   return (
     <Topbar
       currentPageTitle={pageTitle}
+      onToastShow={onToastShow}
     />
   )
 }
