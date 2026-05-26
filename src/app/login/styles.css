@@ -1,6 +1,6 @@
 /* ─── tokens ─── */
 :root {
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --mono: "Source Code Pro", ui-monospace, SFMono-Regular, Menlo, monospace;
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --display: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;
   --radius-sm: 8px;
@@ -98,10 +98,10 @@ body {
   width: 44px; height: 44px;
   display: grid; place-items: center;
   background: color-mix(in oklab, var(--accent) 14%, transparent);
-  color: var(--accent);
   border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
   border-radius: 11px;
   backdrop-filter: blur(6px);
+  overflow: hidden;
 }
 .logo-text { display: flex; flex-direction: column; line-height: 1; flex-shrink: 0; min-width: 0; }
 .logo-name {
@@ -223,7 +223,8 @@ body {
   display: flex;
   flex-direction: column;
   padding: 28px 56px 32px;
-  overflow-y: auto;
+  height: 100vh;
+  overflow: hidden;
 }
 @media (max-width: 1200px) {
   .form-pane { padding: 28px 36px 32px; }
@@ -246,14 +247,17 @@ body {
 .nav-link:hover { background: var(--paper-2); border-color: rgba(0,0,0,0.16); }
 
 .form-wrap {
-  margin: auto 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   width: 100%;
   max-width: 420px;
   align-self: center;
-  padding: 32px 0;
+  padding: 16px 0;
 }
 
-.form-head { margin-bottom: 28px; }
+.form-head { margin-bottom: 20px; }
 .kicker {
   font-family: var(--mono);
   font-size: 11px;
@@ -280,7 +284,7 @@ body {
 }
 
 /* SSO buttons */
-.auth-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+.auth-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 .btn-sso {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%;
@@ -315,7 +319,7 @@ body {
 .divider {
   display: flex; align-items: center;
   gap: 12px;
-  margin: 6px 0 22px;
+  margin: 6px 0 16px;
   color: var(--muted-paper);
   font-size: 12px;
 }
@@ -432,8 +436,8 @@ body {
 
 /* foot */
 .form-foot {
-  margin-top: 28px;
-  padding-top: 22px;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--line-2);
   display: flex; justify-content: space-between; align-items: center;
   font-size: 12px;

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import ColonyNetwork from '@/components/colony-network'
+import Image from 'next/image'
 import './styles.css'
 
 const PALETTE = {
@@ -116,19 +117,13 @@ export default function LoginPage() {
         <div className="brand-content">
           <header className="brand-head">
             <div className="logo-mark" aria-hidden="true">
-              <svg viewBox="0 0 32 32" width="32" height="32">
-                {/* scanner corners */}
-                <path d="M 4 10 V 4 H 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M 22 4 H 28 V 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M 4 22 V 28 H 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M 22 28 H 28 V 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                {/* mouse silhouette in center */}
-                <ellipse cx="14" cy="17" rx="5" ry="3.4" fill="currentColor" />
-                <circle cx="19" cy="15.5" r="2.2" fill="currentColor" />
-                <circle cx="18.5" cy="13.5" r="1.0" fill="currentColor" />
-                <circle cx="20.0" cy="13.8" r="0.9" fill="currentColor" />
-                <path d="M 9 17.6 Q 6.5 18.2 6.5 16" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round"/>
-              </svg>
+              <Image
+                src="/images/logo.png"
+                alt="CageSync"
+                width={44}
+                height={44}
+                className="rounded-lg"
+              />
             </div>
             <div className="logo-text">
               <div className="logo-name">CageSync</div>
@@ -147,6 +142,7 @@ export default function LoginPage() {
             <h1 className="hero-title">
               Scan cages.<br/>
               Sync sheets.<br/>
+              <br/>
               <span className="hero-accent">Pass audits.</span>
             </h1>
             <p className="hero-sub">
