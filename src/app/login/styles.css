@@ -238,26 +238,31 @@ body {
   padding: 28px 56px 32px;
   height: 100vh;
   overflow: hidden;
-  color: var(--ink);
+  color: var(--ink-right, #1A1A2E);
 }
 .form-pane * {
-  color: var(--ink) !important;
+  color: var(--ink-right, #1A1A2E) !important;
 }
 .form-pane .muted-text,
 .form-pane .divider,
 .form-pane .form-sub,
 .form-pane .remember,
 .form-pane .form-foot {
-  color: var(--ink-muted) !important;
+  color: var(--ink-muted, #5A6172) !important;
 }
 .form-pane .nav-link,
 .form-pane .field-hint,
 .form-pane .form-foot a {
-  color: var(--primary) !important;
+  color: var(--primary, #1A7F64) !important;
 }
 .form-pane .btn-primary {
   color: #FFFFFF !important;
-  background: var(--primary) !important;
+  background: var(--primary, #1A7F64) !important;
+  opacity: 1 !important;
+}
+.form-pane .btn-sso {
+  color: var(--ink-right, #1A1A2E) !important;
+  background: var(--card) !important;
 }
 @media (max-width: 1200px) {
   .form-pane { padding: 28px 36px 32px; }
@@ -296,7 +301,7 @@ body {
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: #1A1A2E;
   margin-bottom: 12px;
 }
 .form-title {
@@ -306,7 +311,7 @@ body {
   line-height: 1.1;
   letter-spacing: -0.03em;
   margin: 0 0 10px 0;
-  color: var(--ink);
+  color: #1A1A2E;
   text-wrap: balance;
 }
 .form-sub {
@@ -362,7 +367,7 @@ body {
 
 /* form */
 .auth-form { display: flex; flex-direction: column; gap: 16px; }
-.auth-form * { color: var(--ink) !important; }
+.auth-form * { color: #1A1A2E !important; }
 .auth-form .field-hint { color: var(--primary) !important; }
 .auth-form .divider { color: var(--ink-muted) !important; }
 .auth-form .remember { color: var(--ink-muted) !important; }
@@ -371,7 +376,7 @@ body {
   display: flex; justify-content: space-between; align-items: baseline;
   font-size: 12.5px;
   font-weight: 500;
-  color: var(--ink);
+  color: #1A1A2E;
   white-space: nowrap;
 }
 .field-hint {
@@ -404,7 +409,7 @@ body {
   background: transparent;
   font-family: var(--sans);
   font-size: 14.5px;
-  color: var(--ink);
+  color: #1A1A2E;
 }
 .input-wrap input::placeholder { color: color-mix(in oklab, var(--muted-paper) 70%, transparent); }
 .eye-btn {
@@ -436,8 +441,8 @@ body {
   transition: all 0.15s;
 }
 .remember input:checked + .check {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: #1A1A2E;
+  border-color: #1A1A2E;
   color: white;
 }
 

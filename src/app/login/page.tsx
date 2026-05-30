@@ -10,7 +10,7 @@ import './styles.css'
 const PALETTE = {
   bg: "#1A7F64",
   bg2: "#085041",
-  ink: "#FFFFFF",
+  ink: "#FFFFFF", // Only for LEFT panel on dark background
   muted: "#6B7280",
   card: "#FFFFFF",
   line: "#E2E8F0"
@@ -34,11 +34,16 @@ export default function LoginPage() {
   const cssVars = {
     "--bg": PALETTE.bg,
     "--bg2": PALETTE.bg2,
-    "--ink": PALETTE.ink,
+    "--ink": PALETTE.ink, // WHITE for left panel only
     "--muted": PALETTE.muted,
     "--card": PALETTE.card,
     "--line": PALETTE.line,
     "--accent": ACCENT,
+    // Override with proper brand tokens (these are set in CSS)
+    "--primary": "#1A7F64",
+    "--primary-dark": "#085041",
+    "--ink-right": "#1A1A2E", // DARK for right panel
+    "--ink-muted": "#5A6172",
   }
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
