@@ -8,15 +8,15 @@ import Image from 'next/image'
 import './styles.css'
 
 const PALETTE = {
-  bg: "#0a2a22",
-  bg2: "#0d3a2e",
-  ink: "#e6f5ec",
-  muted: "#9cc6b1",
-  card: "#0f4234",
-  line: "#1f6a52"
+  bg: "#1A7F64",
+  bg2: "#085041",
+  ink: "#FFFFFF",
+  muted: "#6B7280",
+  card: "#FFFFFF",
+  line: "#E2E8F0"
 }
 
-const ACCENT = "#7FE7B5"
+const ACCENT = "#46D9A2"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
