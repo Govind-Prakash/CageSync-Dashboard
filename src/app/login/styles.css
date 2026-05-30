@@ -14,6 +14,7 @@
   --primary-surface: #E8F5F1;
   --mint-accent: #46D9A2;
   --ink: #1A1A2E;
+  --ink-muted: #5A6172;
   --card: #FFFFFF;
   --border: #E2E8F0;
 
@@ -246,7 +247,7 @@ body {
   display: flex; align-items: center; justify-content: flex-end; gap: 12px;
   font-size: 13px;
 }
-.muted-text { color: var(--muted-paper); }
+.muted-text { color: var(--ink-muted); }
 .nav-link {
   color: var(--primary);
   text-decoration: none;
@@ -292,7 +293,7 @@ body {
   margin: 0;
   font-size: 14.5px;
   line-height: 1.5;
-  color: var(--muted-paper);
+  color: var(--ink-muted);
 }
 
 /* SSO buttons */
@@ -307,13 +308,13 @@ body {
   font-family: var(--sans);
   font-size: 14.5px;
   font-weight: 500;
-  color: var(--ink-paper);
+  color: var(--ink);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.05s;
 }
 .btn-sso:hover { background: var(--paper-2); border-color: rgba(0,0,0,0.16); }
 .btn-sso:active { transform: translateY(1px); }
-.btn-sso.muted { color: var(--muted-paper); position: relative; cursor: not-allowed; }
+.btn-sso.muted { color: var(--ink-muted); position: relative; cursor: not-allowed; }
 .btn-sso.muted:hover { background: white; }
 .btn-sso .soon {
   margin-left: 6px;
@@ -332,7 +333,7 @@ body {
   display: flex; align-items: center;
   gap: 12px;
   margin: 6px 0 16px;
-  color: var(--muted-paper);
+  color: var(--ink-muted);
   font-size: 12px;
 }
 .divider::before, .divider::after {
@@ -379,7 +380,7 @@ body {
   background: transparent;
   font-family: var(--sans);
   font-size: 14.5px;
-  color: var(--ink-paper);
+  color: var(--ink);
 }
 .input-wrap input::placeholder { color: color-mix(in oklab, var(--muted-paper) 70%, transparent); }
 .eye-btn {
@@ -397,7 +398,7 @@ body {
   display: flex; align-items: center; gap: 10px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--muted-paper);
+  color: var(--ink-muted);
   user-select: none;
   margin-top: 2px;
 }
@@ -411,8 +412,8 @@ body {
   transition: all 0.15s;
 }
 .remember input:checked + .check {
-  background: var(--ink-paper);
-  border-color: var(--ink-paper);
+  background: var(--ink);
+  border-color: var(--ink);
   color: white;
 }
 
@@ -424,24 +425,33 @@ body {
   padding: 14px 18px;
   border: 1px solid var(--primary);
   background: var(--primary);
-  color: white;
+  color: #FFFFFF;
   border-radius: var(--radius);
   font-family: var(--sans);
   font-size: 14.5px;
   font-weight: 500;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.06s, background 0.15s, opacity 0.2s;
+  transition: transform 0.06s, background 0.15s;
+  opacity: 1;
 }
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   background: var(--primary);
   border-color: var(--primary);
+  color: #FFFFFF;
 }
-.btn-primary:not(:disabled):hover { background: var(--primary-dark); }
+.btn-primary:not(:disabled):hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
 .btn-primary:not(:disabled):active { transform: translateY(1px); }
-.btn-primary.ready { background: var(--primary); }
+.btn-primary.ready {
+  background: var(--primary);
+  color: #FFFFFF;
+  opacity: 1;
+}
 
 .spin { animation: spinrot 0.9s linear infinite; }
 @keyframes spinrot { to { transform: rotate(360deg); } }
@@ -453,7 +463,7 @@ body {
   border-top: 1px solid var(--line-2);
   display: flex; justify-content: space-between; align-items: center;
   font-size: 12px;
-  color: var(--muted-paper);
+  color: var(--ink-muted);
   gap: 12px;
 }
 .form-foot a {
