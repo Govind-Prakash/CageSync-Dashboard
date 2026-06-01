@@ -31,7 +31,7 @@ export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const cssVars = {
+  const cssVars: React.CSSProperties = {
     "--bg": PALETTE.bg,
     "--bg2": PALETTE.bg2,
     "--ink": PALETTE.ink, // WHITE for left panel only
@@ -44,7 +44,7 @@ export default function LoginPage() {
     "--primary-dark": "#085041",
     "--ink-right": "#1A1A2E", // DARK for right panel
     "--ink-muted": "#5A6172",
-  }
+  } as React.CSSProperties
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const canSubmit = validEmail && password.length >= 6 && !submitting

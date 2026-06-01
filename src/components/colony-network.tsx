@@ -81,7 +81,7 @@ export default function ColonyNetwork({
 }: ColonyNetworkProps) {
   const cells = useMemo(() => buildRack(seed), [seed])
   const [tick, setTick] = useState(0)
-  const rafRef = useRef<number>()
+  const rafRef = useRef<number | undefined>(undefined)
   const startRef = useRef(performance.now())
 
   useEffect(() => {
