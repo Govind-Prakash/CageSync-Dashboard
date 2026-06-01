@@ -21,11 +21,13 @@ const ACCENT = "#46D9A2"
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [passwordFocused, setPasswordFocused] = useState(false)
   const [emailFocused, setEmailFocused] = useState(false)
+  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
 
   const router = useRouter()
@@ -47,7 +49,8 @@ export default function LoginPage() {
   } as React.CSSProperties
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  const canSubmit = validEmail && password.length >= 6 && !submitting
+  const canSubmit = validEmail && password.length >= 6 && !submitting &&
+    (isSignUp ? confirmPassword === password : true)
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -223,16 +226,12 @@ export default function LoginPage() {
           )}
 
           <div className="auth-stack">
-            <button className="btn-sso" type="button" onClick={handleGoogleAuth} disabled={submitting}>
+            <button className="btn-google-primary" type="button" onClick={handleGoogleAuth} disabled={submitting}>
               <GoogleLogo /> Continue with Google
-            </button>
-            <button className="btn-sso muted" type="button" disabled>
-              <OrcidLogo /> Continue with ORCID
-              <span className="soon">soon</span>
             </button>
           </div>
 
-          <div className="divider"><span>or {isSignUp ? 'sign up' : 'sign in'} with email</span></div>
+          <div className="divider"><span>or {isSignUp ? 'sign up' : 'continue'} with email</span></div>
 
           <form onSubmit={handleEmailSubmit} className="auth-form" noValidate>
             <label className={`field ${emailFocused ? "focused" : ""}`}>
@@ -281,6 +280,27 @@ export default function LoginPage() {
               </div>
             </label>
 
+            {isSignUp && (
+              <label className={`field ${confirmPasswordFocused ? "focused" : ""}`}>
+                <span className="field-label">
+                  <span>Confirm password</span>
+                  {confirmPassword && confirmPassword !== password && <em className="field-hint err">passwords don't match</em>}
+                </span>
+                <div className="input-wrap">
+                  <KeyIcon />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onFocus={() => setConfirmPasswordFocused(true)}
+                    onBlur={() => setConfirmPasswordFocused(false)}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                  />
+                </div>
+              </label>
+            )}
+
             {!isSignUp && (
               <label className="remember">
                 <input type="checkbox" defaultChecked />
@@ -289,11 +309,11 @@ export default function LoginPage() {
               </label>
             )}
 
-            <button type="submit" className={`btn-primary ${canSubmit ? "ready" : ""}`} disabled={!canSubmit}>
+            <button type="submit" className={`${isSignUp ? 'btn-secondary' : 'btn-primary'} ${canSubmit ? "ready" : ""}`} disabled={!canSubmit}>
               {submitting ? (
                 <><Spinner /> {isSignUp ? 'Creating account…' : 'Authenticating…'}</>
               ) : (
-                <>{isSignUp ? 'Create account' : 'Sign in to dashboard'} <ArrowIcon /></>
+                <>{isSignUp ? 'Create Account' : 'Sign In'} <ArrowIcon /></>
               )}
             </button>
           </form>
@@ -378,9 +398,3 @@ const GoogleLogo = () => (
   </svg>
 )
 
-const OrcidLogo = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="11" fill="currentColor" opacity="0.18"/>
-    <text x="12" y="16" textAnchor="middle" fontSize="11" fontWeight="700" fill="currentColor" fontFamily="system-ui">iD</text>
-  </svg>
-)
