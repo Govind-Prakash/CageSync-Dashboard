@@ -29,6 +29,7 @@ export default function LoginPage() {
   const [emailFocused, setEmailFocused] = useState(false)
   const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
+  const [rememberMe, setRememberMe] = useState(true)
 
   const router = useRouter()
   const supabase = createClient()
@@ -226,7 +227,7 @@ export default function LoginPage() {
           )}
 
           <div className="auth-stack">
-            <button className="btn-google-primary" type="button" onClick={handleGoogleAuth} disabled={submitting}>
+            <button className="btn-google" type="button" onClick={handleGoogleAuth} disabled={submitting}>
               <GoogleLogo /> Continue with Google
             </button>
           </div>
@@ -302,9 +303,25 @@ export default function LoginPage() {
             )}
 
             {!isSignUp && (
-              <label className="remember">
-                <input type="checkbox" defaultChecked />
-                <span className="check" aria-hidden="true"><CheckIcon /></span>
+              <label className="remember-custom" onClick={() => setRememberMe(!rememberMe)}>
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                  className="opacity-0 absolute"
+                />
+                <div className={`custom-checkbox ${rememberMe ? 'checked' : ''}`}>
+                  {rememberMe && (
+                    <svg viewBox="0 0 10 8" fill="none" className="w-2.5 h-2">
+                      <path
+                        d="M1 4l2.5 2.5L9 1"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  )}
+                </div>
                 <span>Keep me signed in on this device</span>
               </label>
             )}
@@ -390,11 +407,11 @@ const Spinner = () => (
 )
 
 const GoogleLogo = () => (
-  <svg width="18" height="18" viewBox="0 0 48 48">
-    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/>
-    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-    <path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.3C29.3 35 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.6 39.6 16.2 44 24 44z"/>
-    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.5l6.2 5.3C40.9 35.9 44 30.4 44 24c0-1.2-.1-2.4-.4-3.5z"/>
+  <svg width="18" height="18" viewBox="0 0 18 18">
+    <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+    <path fill="#34A353" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+    <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18z"/>
+    <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/>
   </svg>
 )
 
