@@ -30,6 +30,7 @@ export default function LoginPage() {
   const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
+  const [isAppleLoading, setIsAppleLoading] = useState(false)
 
   const router = useRouter()
   const supabase = createClient()
@@ -84,6 +85,28 @@ export default function LoginPage() {
       setError('An unexpected error occurred')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleAppleAuth = async () => {
+    setIsAppleLoading(true)
+    setError("")
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+
+      if (error) {
+        setError(error.message)
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
+    } finally {
+      setIsAppleLoading(false)
     }
   }
 
@@ -227,6 +250,47 @@ export default function LoginPage() {
           )}
 
           <div className="auth-stack">
+            <button
+              className="btn-apple"
+              type="button"
+              onClick={handleAppleAuth}
+              disabled={isAppleLoading}
+              style={{
+                backgroundColor: '#000000',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                height: '44px',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 500,
+                fontSize: '14px',
+                cursor: isAppleLoading ? 'not-allowed' : 'pointer',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                transition: 'background-color 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (!isAppleLoading) {
+                  e.currentTarget.style.backgroundColor = '#1a1a1a'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isAppleLoading) {
+                  e.currentTarget.style.backgroundColor = '#000000'
+                }
+              }}
+            >
+              {isAppleLoading ? (
+                <Spinner />
+              ) : (
+                <AppleLogo />
+              )}
+              Continue with Apple
+            </button>
             <button className="btn-google" type="button" onClick={handleGoogleAuth} disabled={submitting}>
               <GoogleLogo /> Continue with Google
             </button>
@@ -403,6 +467,12 @@ const ShieldIcon = () => (
 const Spinner = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" className="spin">
     <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.5" strokeDasharray="40 60" strokeLinecap="round" opacity="0.95"/>
+  </svg>
+)
+
+const AppleLogo = () => (
+  <svg width="16" height="18" viewBox="0 0 814 1000" fill="white">
+    <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.5 135.4-317.3 269-317.3 70.1 0 128.4 46.4 172.5 46.4 42.8 0 109.6-49 188.3-49 30.4 0 103.7 2.6 162.6 51.9zm-134.2-199.5c31.7-37.5 54.4-89.7 54.4-141.9 0-7.1-.6-14.3-1.9-20.1-51.9 2-113.1 34.7-149.3 76.8-28.5 32.4-55.1 84.7-55.1 137.6 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 46.4 0 105.1-30.9 136.4-71.8z"/>
   </svg>
 )
 
