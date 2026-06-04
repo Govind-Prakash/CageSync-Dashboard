@@ -128,7 +128,7 @@ body {
   font-family: var(--mono);
   font-size: 9.5px;
   letter-spacing: 0.22em;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.85);
   margin-top: 5px;
   white-space: nowrap;
 }
