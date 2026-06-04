@@ -255,34 +255,6 @@ export default function LoginPage() {
               type="button"
               onClick={handleAppleAuth}
               disabled={isAppleLoading}
-              style={{
-                backgroundColor: '#000000',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                height: '44px',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: 500,
-                fontSize: '14px',
-                cursor: isAppleLoading ? 'not-allowed' : 'pointer',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                transition: 'background-color 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                if (!isAppleLoading) {
-                  e.currentTarget.style.backgroundColor = '#1a1a1a'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isAppleLoading) {
-                  e.currentTarget.style.backgroundColor = '#000000'
-                }
-              }}
             >
               {isAppleLoading ? (
                 <Spinner />

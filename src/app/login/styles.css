@@ -324,6 +324,36 @@ body {
 /* SSO buttons */
 .auth-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 
+/* Apple button */
+.btn-apple {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  background: #000000;
+  color: #FFFFFF !important;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.05s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.btn-apple * {
+  color: #FFFFFF !important;
+}
+.btn-apple:hover {
+  background: #1a1a1a;
+}
+.btn-apple:active { transform: translateY(1px); }
+.btn-apple:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Google button - official branding */
 .btn-google {
   display: flex; align-items: center; justify-content: center; gap: 10px;
