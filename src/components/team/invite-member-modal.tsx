@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getMyLabId } from '@/lib/supabase/lab'
 
 interface InviteMemberModalProps {
   children: React.ReactNode
@@ -42,12 +43,14 @@ export default function InviteMemberModal({ children }: InviteMemberModalProps) 
     setSuccessMessage('')
 
     try {
+      const labId = await getMyLabId(supabase)
+
       const { error } = await supabase
         .from('lab_invites')
         .insert({
+          lab_id: labId,
           email: email.trim().toLowerCase(),
           role: role,
-          lab_id: null, // Will be added when lab setup is implemented
           accepted: false
         })
 

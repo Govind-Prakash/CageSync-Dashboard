@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getMyLabId } from '@/lib/supabase/lab'
 
 interface AddCageModalProps {
   children: React.ReactNode
@@ -27,9 +28,12 @@ export default function AddCageModal({ children }: AddCageModalProps) {
     setIsSubmitting(true)
 
     try {
+      const labId = await getMyLabId(supabase)
+
       const { error } = await supabase
         .from('cages')
         .insert({
+          lab_id: labId,
           cage_code: cageCode.trim(),
           label: label.trim() || null,
           status,

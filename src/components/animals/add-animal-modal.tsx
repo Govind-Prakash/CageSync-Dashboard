@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getMyLabId } from '@/lib/supabase/lab'
 
 interface AddAnimalModalProps {
   children: React.ReactNode
@@ -35,14 +36,17 @@ export default function AddAnimalModal({ children }: AddAnimalModalProps) {
     setError('')
 
     try {
+      const labId = await getMyLabId(supabase)
+
       const { error } = await supabase
         .from('animals')
         .insert({
+          lab_id: labId,
           animal_code: animalCode.trim(),
           species: species.trim() || null,
           strain: strain.trim() || null,
           sex,
-          date_of_birth: dateOfBirth || null,
+          dob: dateOfBirth || null,
           genotype: genotype.trim() || null,
           cage_id: cageId || null,
           notes: notes.trim() || null,

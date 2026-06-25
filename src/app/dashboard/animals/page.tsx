@@ -255,7 +255,7 @@ export default async function AnimalsPage() {
                         fontSize: '14px'
                       }}
                     >
-                      {animal.date_of_birth ? formatDate(animal.date_of_birth) : '-'}
+                      {animal.dob ? formatDate(animal.dob) : '-'}
                     </span>
                   </td>
                 </tr>
