@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import ColonyNetwork from '@/components/colony-network'
 import Image from 'next/image'
@@ -18,7 +18,18 @@ const PALETTE = {
 
 const ACCENT = "#46D9A2"
 
+// useSearchParams() can't be statically prerendered. Wrap the page in a
+// Suspense boundary so Next.js renders a fallback during prerender and
+// hydrates the actual form on the client.
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageInner />
+    </Suspense>
+  )
+}
+
+function LoginPageInner() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -34,6 +45,11 @@ export default function LoginPage() {
 
   const router = useRouter()
   const supabase = createClient()
+  const searchParams = useSearchParams()
+  // ?next=/some/path — used by the invite-accept flow (and any other flow
+  // that bounces the user through login). Defaults to /dashboard. Must be
+  // a same-origin path to prevent open-redirect attacks.
+  const nextPath = getSafeNext(searchParams?.get('next'))
 
   const cssVars: React.CSSProperties = {
     "--bg": PALETTE.bg,
@@ -78,7 +94,7 @@ export default function LoginPage() {
       if (result.error) {
         setError(result.error.message)
       } else {
-        router.push('/dashboard')
+        router.push(nextPath)
         router.refresh()
       }
     } catch (err) {
@@ -96,7 +112,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`
         }
       })
 
@@ -118,7 +134,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
         }
       })
 
@@ -447,6 +463,18 @@ const AppleLogo = () => (
     <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.5 135.4-317.3 269-317.3 70.1 0 128.4 46.4 172.5 46.4 42.8 0 109.6-49 188.3-49 30.4 0 103.7 2.6 162.6 51.9zm-134.2-199.5c31.7-37.5 54.4-89.7 54.4-141.9 0-7.1-.6-14.3-1.9-20.1-51.9 2-113.1 34.7-149.3 76.8-28.5 32.4-55.1 84.7-55.1 137.6 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 46.4 0 105.1-30.9 136.4-71.8z"/>
   </svg>
 )
+
+/**
+ * Returns the `next` query param if it's a safe same-origin path,
+ * otherwise the default `/dashboard`. Rejects external URLs and
+ * protocol-relative URLs (//evil.com) to prevent open redirects.
+ */
+function getSafeNext(raw: string | null | undefined): string {
+  if (!raw) return '/dashboard'
+  if (!raw.startsWith('/')) return '/dashboard'
+  if (raw.startsWith('//')) return '/dashboard'
+  return raw
+}
 
 const GoogleLogo = () => (
   <svg width="18" height="18" viewBox="0 0 18 18">
