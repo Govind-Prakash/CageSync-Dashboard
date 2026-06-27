@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { getMyLabId } from '@/lib/supabase/lab'
+import { sendInviteEmail } from '@/app/dashboard/team/actions'
 
 interface InviteMemberModalProps {
   children: React.ReactNode
@@ -45,7 +46,7 @@ export default function InviteMemberModal({ children }: InviteMemberModalProps) 
     try {
       const labId = await getMyLabId(supabase)
 
-      const { error } = await supabase
+      const { data: created, error } = await supabase
         .from('lab_invites')
         .insert({
           lab_id: labId,
@@ -53,11 +54,25 @@ export default function InviteMemberModal({ children }: InviteMemberModalProps) 
           role: role,
           accepted: false
         })
+        .select('token')
+        .single()
 
       if (error) throw error
 
-      // Show success message
-      setSuccessMessage(`Invitation sent to ${email.trim()}`)
+      // Fire-and-await the Resend send. If it fails the invite still
+      // exists — caller can copy the accept URL manually.
+      const emailResult = await sendInviteEmail({
+        token: created.token as string,
+        email: email.trim().toLowerCase(),
+      })
+
+      if (emailResult.success) {
+        setSuccessMessage(`Invitation sent to ${email.trim()}`)
+      } else {
+        setSuccessMessage(
+          `Invitation created (email send failed: ${emailResult.error}). Share the accept link from the team page.`
+        )
+      }
 
       // Reset form
       setEmail('')
@@ -68,7 +83,7 @@ export default function InviteMemberModal({ children }: InviteMemberModalProps) 
         router.refresh()
         setIsOpen(false)
         setSuccessMessage('')
-      }, 2000)
+      }, 2500)
 
     } catch (error: any) {
       if (error.code === '23505') { // Unique constraint violation
