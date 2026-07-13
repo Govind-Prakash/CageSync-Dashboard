@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getActiveLabId } from '@/lib/supabase/lab'
 import { Heart, Plus } from 'lucide-react'
 import AddBreedingPairModal from '@/components/breeding/add-breeding-pair-modal'
 
@@ -14,10 +15,14 @@ export default async function BreedingPage() {
     redirect('/login')
   }
 
-  const { data: pairs } = await supabase
-    .from('breeding_pairs')
-    .select('*, cages(cage_code), male:animals!male_id(animal_code), female:animals!female_id(animal_code)')
-    .order('created_at', { ascending: false })
+  const labId = await getActiveLabId(supabase)
+  const { data: pairs } = labId
+    ? await supabase
+        .from('breeding_pairs')
+        .select('*, cages(cage_code), male:animals!male_id(animal_code), female:animals!female_id(animal_code)')
+        .eq('lab_id', labId)
+        .order('created_at', { ascending: false })
+    : { data: [] as any[] }
 
   // Format date
   const formatDate = (date: string) => {

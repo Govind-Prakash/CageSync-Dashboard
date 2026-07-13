@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getActiveLabId } from '@/lib/supabase/lab'
 import { FlaskConical, Plus } from 'lucide-react'
 import AddExperimentModal from '@/components/experiments/add-experiment-modal'
 
@@ -14,10 +15,14 @@ export default async function ExperimentsPage() {
     redirect('/login')
   }
 
-  const { data: experiments } = await supabase
-    .from('experiments')
-    .select('*')
-    .order('created_at', { ascending: false })
+  const labId = await getActiveLabId(supabase)
+  const { data: experiments } = labId
+    ? await supabase
+        .from('experiments')
+        .select('*')
+        .eq('lab_id', labId)
+        .order('created_at', { ascending: false })
+    : { data: [] as any[] }
 
   // Get relative time
   const getRelativeTime = (date: string) => {

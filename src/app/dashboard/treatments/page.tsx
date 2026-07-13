@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getActiveLabId } from '@/lib/supabase/lab'
 import { Syringe, Plus } from 'lucide-react'
 import AddTreatmentModal from '@/components/treatments/add-treatment-modal'
 
@@ -14,10 +15,14 @@ export default async function TreatmentsPage() {
     redirect('/login')
   }
 
-  const { data: treatments } = await supabase
-    .from('treatments')
-    .select('*, animals(animal_code)')
-    .order('administered_at', { ascending: false })
+  const labId = await getActiveLabId(supabase)
+  const { data: treatments } = labId
+    ? await supabase
+        .from('treatments')
+        .select('*, animals(animal_code)')
+        .eq('lab_id', labId)
+        .order('administered_at', { ascending: false })
+    : { data: [] as any[] }
 
   // Format date and time
   const formatDateTime = (dateTime: string) => {

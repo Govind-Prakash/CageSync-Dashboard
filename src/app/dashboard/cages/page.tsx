@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getActiveLabId } from '@/lib/supabase/lab'
 import { LayoutGrid, Plus } from 'lucide-react'
 import AddCageModal from '@/components/cages/add-cage-modal'
 
@@ -14,10 +15,17 @@ export default async function CagesPage() {
     redirect('/login')
   }
 
-  const { data: cages } = await supabase
-    .from('cages')
-    .select('*')
-    .order('created_at', { ascending: false })
+  // Scope to the active lab. Without this filter, multi-lab users would
+  // see cages from every lab they're a member of (RLS grants read access
+  // to any lab_membership).
+  const labId = await getActiveLabId(supabase)
+  const { data: cages } = labId
+    ? await supabase
+        .from('cages')
+        .select('*')
+        .eq('lab_id', labId)
+        .order('created_at', { ascending: false })
+    : { data: [] as any[] }
 
   // Get relative time
   const getRelativeTime = (date: string) => {

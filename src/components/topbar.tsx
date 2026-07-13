@@ -6,6 +6,7 @@ import { Bell, Calendar, CheckSquare, CloudOff, RefreshCw, CheckCircle } from 'l
 import NotificationsPanel from './notifications-panel'
 import TasksPanel from './tasks-panel'
 import CalendarPanel from './calendar-panel'
+import LabSwitcher from './lab-switcher'
 
 interface TopbarProps {
   currentPageTitle: string
@@ -117,11 +118,12 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
       className="relative h-14 w-full flex items-center justify-between px-6 border-b"
       style={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0' }}
     >
-      {/* Left side - Page Title only */}
-      <div className="flex items-center">
+      {/* Left side - Page Title + Lab context */}
+      <div className="flex items-center space-x-3">
         <h1 className="font-display font-medium text-lg" style={{ color: '#1A1A2E' }}>
           {currentPageTitle}
         </h1>
+        <LabSwitcher />
       </div>
 
       {/* Right side - Sync, Tasks, Calendar, Notifications */}

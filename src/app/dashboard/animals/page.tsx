@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getActiveLabId } from '@/lib/supabase/lab'
 import { Rabbit, Plus } from 'lucide-react'
 import AddAnimalModal from '@/components/animals/add-animal-modal'
 
@@ -14,10 +15,14 @@ export default async function AnimalsPage() {
     redirect('/login')
   }
 
-  const { data: animals } = await supabase
-    .from('animals')
-    .select('*, cages(cage_code, label)')
-    .order('created_at', { ascending: false })
+  const labId = await getActiveLabId(supabase)
+  const { data: animals } = labId
+    ? await supabase
+        .from('animals')
+        .select('*, cages(cage_code, label)')
+        .eq('lab_id', labId)
+        .order('created_at', { ascending: false })
+    : { data: [] as any[] }
 
   // Get relative time
   const getRelativeTime = (date: string) => {
