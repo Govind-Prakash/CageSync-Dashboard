@@ -193,28 +193,43 @@ Format for each step:
 
 ---
 
-### I-2. Onboarding branching
+### I-2. Auto-create personal lab on signup
 
-**Purpose.** Fresh signup with no `lab_memberships` currently lands on `/dashboard` in a broken state. Force explicit branch: PI (create lab), invitee (already handled by auto-match trigger — but a manual token entry fallback needed), facility overseer (later, blocked on Workstream III).
+**Purpose.** Fresh signup with no `lab_memberships` currently lands on `/dashboard` in a broken state. The individual-first onboarding: silently create a personal lab so the user is productive immediately, no chooser screen. When a PI later invites them, the multi-lab schema handles the rest.
+
+_Design decision made 2026-07-13: `revised from the original "PI vs invitee chooser" design because forcing type-selection at signup is friction that provides zero benefit until the facility feature ships. See discussion in session log; TL;DR: modern SaaS onboarding is individual-first (Notion, Linear, Airtable all do this)._
 
 **Scope.**
-- NEW: `src/app/onboarding/page.tsx` (server component) — checks user state, redirects if already onboarded.
-- NEW: `src/app/onboarding/CreateLab.tsx` (client) — form: name, institution, campus (institution picker deferred to Workstream II).
-- NEW: `src/app/onboarding/AcceptToken.tsx` (client) — token input, calls `accept_invite`.
-- EDIT: `src/middleware.ts` — after auth, if user has no lab_memberships + no facility_memberships → redirect to `/onboarding`.
-- Migration: `0014_create_lab_and_join_rpc.sql` — SECURITY DEFINER function `create_lab_and_join(p_name text, p_institution text)` that atomically creates a lab + inserts the caller as PI via `lab_memberships`. Needed because RLS on `lab_memberships` insert requires either being already PI or being self-bootstrap (which the current policy already allows).
+- Migration: `0014_auto_create_personal_lab.sql` — extends the `handle_new_user` trigger with a fallback block that creates a personal lab named `"{Full name}'s Colony"` and inserts the user as PI via `lab_memberships` (`joined_via='auto_created_personal'`), but only if steps (1) profile-create and (2) invite auto-match did NOT already result in a membership.
+- No new routes, no middleware changes, no client-side code.
 
 **Prerequisites.** None.
 
 **Verification.**
-- Sign up a new test account → should land on `/onboarding`, not `/dashboard`.
-- Choose "Create lab" → fill form → confirm lab exists in DB, `lab_memberships` row created with role=pi.
-- Choose "I have a token" → paste valid token → confirm membership added.
-- Sign in as `govind7x` → should NOT hit onboarding (already has a lab).
+- Simulate a brand-new signup by inserting into `auth.users` with a `raw_user_meta_data.full_name` → confirm profile row exists, personal lab exists with the correct name, `lab_memberships` row inserted with role=pi and `joined_via='auto_created_personal'`, `profiles.lab_id` populated.
+- Test invite-first path (an invite already exists for the email) → user should skip personal-lab creation and land in the invited lab instead.
 
-**Commit.** `onboarding routing for new users + create_lab_and_join rpc`
+**Commit.** `auto-create personal lab on signup — no chooser`
 
-**Rollback.** Remove `/onboarding` route + middleware redirect; drop the RPC.
+**Rollback.** Restore the previous `handle_new_user` body from 0012.
+
+### I-2b. Move cages on invite acceptance (deferred to I-4 territory)
+
+**Purpose.** When Alice (with her own personal lab and 20 cages) accepts an invite to Zhang Lab, she likely wants to move some/all of those cages into Zhang Lab as her way of "onboarding" her work into the team.
+
+**Scope.**
+- Extend the `/invite/accept` flow: after successful accept, show a second step "Move cages from '{Personal Lab Name}' to '{Zhang Lab}'?" with checkbox list of all cages in the user's personal lab.
+- Options: select all / select individually / skip.
+- Uses the cage-transfer RPC from I-4 (needs I-4 built first).
+- Post-selection: bulk transfer runs, then land on dashboard already switched to Zhang Lab as active.
+
+**Semantics.** MOVE (cage.lab_id changes). Not copy, not access-grant. Alice still sees moved cages because she's now a Zhang Lab member.
+
+**Prerequisites.** I-4 (single-cage transfer RPC) — extended to accept an array of cage_ids for bulk operation.
+
+**Verification.** Full end-to-end: create personal lab with 5 test cages, accept invite to another lab, tick 3 cages, submit → 3 cages now show `lab_id` = new lab, 2 stay in personal lab, both accessible to Alice.
+
+**Commit.** `move cages during invite acceptance flow`
 
 ---
 
