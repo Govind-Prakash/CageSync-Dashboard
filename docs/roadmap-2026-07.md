@@ -98,9 +98,9 @@ Source of truth for outstanding work. Every unfinished capability discussed in p
 Each workstream expands into concrete steps in section 4.
 
 ### Workstream I — Multi-lab UX (make the schema actually usable)
-- I-1. Dashboard header lab switcher
-- I-2. Onboarding branching (PI vs invitee vs facility overseer)
-- I-3. Flutter lab switcher + adaptive header
+- I-1. Dashboard header lab switcher ✅ shipped 2026-07-16
+- I-2. Onboarding branching (PI vs invitee vs facility overseer) ✅ shipped 2026-07-16 (silent auto-create)
+- I-3. Flutter lab switcher + adaptive header ✅ shipped 2026-07-16
 - I-4. Cage transfer flow between labs
 
 ### Workstream II — Institution registry + domain-verified search
@@ -233,26 +233,21 @@ _Design decision made 2026-07-13: `revised from the original "PI vs invitee choo
 
 ---
 
-### I-3. Flutter lab switcher + adaptive header
+### I-3. Flutter lab switcher + adaptive header ✅ shipped 2026-07-16 (cagesync `0f261a4`)
 
-**Purpose.** Mirror dashboard I-1 in Flutter. `ProfileService` already caches lab_id; extend to cache the full membership list.
+**Shipped design.** Split the concern in two: a read-only pill indicator on tab headers ("you are here"), and a dedicated switch action in Settings with an Instagram-style outbox guard preventing mid-sync switches.
 
-**Scope.**
-- EDIT: `lib/services/profile_service.dart` — add `currentMemberships()`, fetches from `lab_memberships`.
-- NEW: `lib/presentation/widgets/lab_switcher.dart` — dropdown widget.
-- EDIT: Header widget on Dashboard / Cages / Reminders screens — mount switcher.
-- EDIT: `lib/services/supabase_sync_service.dart` — after `set_active_lab` RPC, re-run `RealtimeSyncService.start()` so subscriptions rebind to the new lab.
-- EDIT: `lib/services/realtime_sync_service.dart` — expose `restart()` that stops + starts subscriptions.
+**Delivered.**
+- `lib/services/profile_service.dart` — `LabMembership` class + `currentMemberships()` (joins lab_memberships with labs) + `setActiveLab(labId)` (RPC + cache refresh + realtime restart).
+- `lib/services/realtime_sync_service.dart` — public `restart()` that stops + `_startWhenReady()`.
+- `lib/presentation/widgets/lab_indicator.dart` — read-only pill mounted on Cages tab header. Renders `SizedBox.shrink()` for solo users or during load.
+- `lib/presentation/widgets/lab_picker.dart` — `openLabPicker(context, ref)` shows a bottom sheet listing memberships. Before switching, checks `OutboxFlusher.pendingCount()`; if > 0 shows "Sync pending changes first" alert with [Cancel] / [Sync now]. On sync, retries `OutboxFlusher.flush()` and blocks if still pending. On success, calls `setActiveLab()` and invalidates `cagesProvider`.
+- Settings account section — shows "Switch lab" row for multi-lab users, read-only "Lab" row for solo users.
+- DAO / provider lab_id filters — `CageDao.getAll({labId})`, `LitterDao.getAllDueLitters({labId})`, `dashboardTasksProvider`, `dashboardActivityProvider` (raw SQL UNION binds lab_id in all four legs).
 
-**Prerequisites.** I-1 (dashboard RPC exists and is used).
-
-**Verification.**
-- Cold-start Flutter with two lab_memberships (temporarily insert one for testing).
-- Confirm switcher renders; switching flips the active lab in local state; cage list on the new active lab loads; realtime subscription rebinds.
-
-**Commit.** `flutter lab switcher + realtime rebind on switch`
-
-**Rollback.** Revert profile_service.dart and header edits; remove widget.
+**Follow-ups (not blocking).**
+- Mount `LabIndicator` on Dashboard/Reminders headers once we resolve the white-pill / dark-green-gradient color clash.
+- Extend lab_id filters to Animals/Treatments/Breeding DAO reads when those tabs get real data (currently only Cages + Dashboard tabs are wired).
 
 ---
 
