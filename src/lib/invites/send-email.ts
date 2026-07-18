@@ -5,12 +5,6 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 // (cookie-authed) and the Flutter-facing API route (JWT-authed). Caller
 // is responsible for producing an authenticated Supabase client — this
 // function only enforces auth via `getUser()` on that client.
-//
-// Resend `from` is currently the default sandbox address
-// (`onboarding@resend.dev`), which can ONLY deliver to the email
-// associated with the Resend account until cagesync.com is verified
-// in Resend. Once verified, change the from address to
-// `invites@cagesync.com` (see roadmap VIII-3).
 export async function sendInviteEmail(
   supabase: SupabaseClient,
   token: string,
@@ -58,7 +52,7 @@ export async function sendInviteEmail(
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     const { error: sendErr } = await resend.emails.send({
-      from: 'CageSync <onboarding@resend.dev>',
+      from: 'CageSync <invites@cagesync.com>',
       to: invite.email,
       subject: `You're invited to join ${labName} on CageSync`,
       html: buildHtml({ labName, inviterName, rolePretty, acceptUrl }),
