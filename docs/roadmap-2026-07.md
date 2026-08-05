@@ -1,6 +1,6 @@
 # CageSync — Roadmap: July 2026
 
-_Last updated: 2026-07-13_
+_Last updated: 2026-08-05_
 
 Source of truth for outstanding work. Every unfinished capability discussed in prior sessions lives here, ordered, with per-step scope, verification, and commit templates. If a step is not in this file, it does not exist. If a step is here but not yet crossed out, it is not shipped.
 
@@ -22,8 +22,8 @@ Source of truth for outstanding work. Every unfinished capability discussed in p
 ## 1. Where we are today
 
 **Repos**
-- Dashboard (Next.js 15): `/Users/govindprakash/SAAS/cagesync-dashboard/` — pushed to `origin/main`, current head `8c7770c`.
-- Flutter mobile: `/Users/govindprakash/SAAS/cagesync/` — 16 commits ahead of `origin/main`, never pushed.
+- Dashboard (Next.js 15): `/Users/govindprakash/SAAS/cagesync-dashboard/` — pushed to `origin/main`, current head `13bb142`.
+- Flutter mobile: `/Users/govindprakash/SAAS/cagesync/` — pushed to `origin/main`, current head `6ca3225`.
 
 **Users**
 - 1 real user: `govind7x@gmail.com` (PI of "CageSync Lab", IISER Bhopal, id `add08510-…`)
@@ -36,10 +36,10 @@ Source of truth for outstanding work. Every unfinished capability discussed in p
 - 12 dashboard migrations applied (0001–0012).
 
 **Apps status**
-- Dashboard: all four visible tabs (Dashboard, Cages, Reminders, Settings) project real data. Add-cage / add-animal / invite-member modals wire `lab_id` on insert.
-- Flutter: bidirectional Supabase sync with outbox + realtime + orphan backfill; all 5 tabs show real data with honest empty states; multi-lab foundation NOT yet wired to UI (still assumes single lab).
+- Dashboard: all four visible tabs (Dashboard, Cages, Reminders, Settings) project real data. Header lab switcher live. Add-cage / add-animal / invite-member modals wire `lab_id` on insert.
+- Flutter: bidirectional Supabase sync with outbox + realtime + orphan backfill; all 5 tabs show real data with honest empty states; multi-lab foundation now wired — Settings has lab picker with outbox guard; DAO reads scoped to active lab.
 - Google Sheets sync restored via `AuthService.connectGoogleForSheets()` and rebuilt SheetsService.
-- Invite flow (dashboard): end-to-end works — insert row → Resend email → `/invite/accept` page → `accept_invite` RPC → membership created. Auto-match trigger on signup for pending invites.
+- Invite flow: end-to-end works from BOTH dashboard AND Flutter — Flutter Settings → Invite collaborator opens dialog → inserts row → POSTs token to `/api/invites/send-email` on dashboard → Resend email → `/invite/accept` → `accept_invite` RPC → membership created. Auto-match trigger on signup for pending invites.
 
 ---
 
@@ -132,7 +132,7 @@ Each workstream expands into concrete steps in section 4.
 - V-2. Optional: litter proposal system (`pending_proposals` + RPCs + PI inbox)
 
 ### Workstream VI — Invite flow completion
-- VI-1. Flutter invite form (mirror of dashboard modal) + API route for email send
+- VI-1. Flutter invite form (mirror of dashboard modal) + API route for email send ✅ shipped 2026-08-05 (dashboard `abab60a`, flutter `2848e76`)
 
 ### Workstream VII — Audit & compliance
 - VII-1. Audit log table + triggers on destructive ops
@@ -144,7 +144,7 @@ Each workstream expands into concrete steps in section 4.
 - VIII-3. Change email `from` to `invites@cagesync.com`
 - VIII-4. Rotate Resend API key
 - VIII-5. Add `RESEND_API_KEY` + `NEXT_PUBLIC_SITE_URL` to Vercel env vars
-- VIII-6. Commit or resolve the 8 pre-existing modified Flutter files
+- VIII-6. Commit or resolve the 8 pre-existing modified Flutter files ✅ shipped 2026-08-05 (flutter `2848e76`, `a422769`, `6ca3225`)
 - VIII-7. Remove `records.synced_to_sheet` tech debt or formalize its purpose
 
 ---
@@ -725,7 +725,7 @@ _Design decision made 2026-07-13: `revised from the original "PI vs invitee choo
 
 ---
 
-### VI-1. Flutter invite form + shared email API route
+### VI-1. Flutter invite form + shared email API route ✅ shipped 2026-08-05 (dashboard `abab60a`, flutter `2848e76`)
 
 **Purpose.** Wire the dead "Invite collaborator" row in Flutter settings.
 
@@ -823,7 +823,12 @@ _Design decision made 2026-07-13: `revised from the original "PI vs invitee choo
 
 ---
 
-### VIII-6. Commit or resolve 8 pre-existing Flutter files
+### VIII-6. Commit or resolve 8 pre-existing Flutter files ✅ shipped 2026-08-05
+
+**Bundled into three commits on flutter main:**
+- `2848e76` — VI-1 invite form (api_config, invite_member_dialog, settings wire-up)
+- `a422769` — notification_settings_screen + flagged_cages gear wire-up + router entry
+- `6ca3225` — paywall pricing update + onboarding badge clip + edit-profile FocusNode + drive_service UTC coercion
 
 **Files still uncommitted on Flutter main (from before this session):**
 - lib/core/router/app_router.dart
