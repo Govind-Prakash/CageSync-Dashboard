@@ -22,8 +22,10 @@ Source of truth for outstanding work. Every unfinished capability discussed in p
 ## 1. Where we are today
 
 **Repos**
-- Dashboard (Next.js 15): `/Users/govindprakash/SAAS/cagesync-dashboard/` — pushed to `origin/main`, current head `13bb142`.
+- Dashboard (Next.js 15): `/Users/govindprakash/SAAS/cagesync-dashboard/` — pushed to `origin/main`, current head `8f00d69` (before this IV commit).
 - Flutter mobile: `/Users/govindprakash/SAAS/cagesync/` — pushed to `origin/main`, current head `6ca3225`.
+
+**Migrations applied 0019–0021** were run via the Supabase Dashboard SQL editor because the current network blocks outbound port 5432 to `aws-1-ap-northeast-2.pooler.supabase.com`. The `supabase_migrations.schema_migrations` table does NOT record them. All three are idempotent (`IF NOT EXISTS` / `DROP POLICY IF EXISTS` / `ON CONFLICT DO NOTHING`) so a future `supabase db push` on a network that allows 5432 will safely no-op. To silence the CLI, run `supabase migration repair --status applied 0019 0020 0021` when unblocked.
 
 **Users**
 - 1 real user: `govind7x@gmail.com` (PI of "CageSync Lab", IISER Bhopal, id `add08510-…`)
@@ -119,9 +121,9 @@ Each workstream expands into concrete steps in section 4.
 - III-6. Flutter facility view mode
 
 ### Workstream IV — Flag system (facility staff → cage flags with photos)
-- IV-1. Schema (`flag_types`, `cage_flags`, `cage_flag_attachments`)
-- IV-2. Supabase Storage bucket + RLS
-- IV-3. Seed flag_types (14 pre-defined)
+- IV-1. Schema (`flag_types`, `cage_flags`, `cage_flag_attachments`) ✅ shipped 2026-08-14 (dashboard `0019`)
+- IV-2. Supabase Storage bucket + RLS ✅ shipped 2026-08-14 (dashboard `0020`)
+- IV-3. Seed flag_types (14 pre-defined) ✅ shipped 2026-08-14 (dashboard `0021`)
 - IV-4. Flutter: flag creation dialog + photo capture + upload
 - IV-5. Dashboard: cage detail flags section + resolve flow
 - IV-6. Realtime subscription addition
