@@ -1,6 +1,6 @@
 # CageSync — Roadmap: July 2026
 
-_Last updated: 2026-08-05_
+_Last updated: 2026-08-14_
 
 Source of truth for outstanding work. Every unfinished capability discussed in prior sessions lives here, ordered, with per-step scope, verification, and commit templates. If a step is not in this file, it does not exist. If a step is here but not yet crossed out, it is not shipped.
 
@@ -104,9 +104,9 @@ Each workstream expands into concrete steps in section 4.
 - I-4. Cage transfer flow between labs
 
 ### Workstream II — Institution registry + domain-verified search
-- II-1. Schema additions (`institutions`, `labs.institution_id`, `labs.campus`, `labs.discoverable`, `facilities.institution_id`, `facilities.campus`, `user_institution_verifications`, `email_verification_codes`)
-- II-2. Auto-verify on signup via email domain (extend `handle_new_user`)
-- II-3. Institution picker in lab / facility creation forms
+- II-1. Schema additions (`institutions`, `labs.institution_id`, `labs.campus`, `labs.discoverable`, `facilities.institution_id`, `facilities.campus`, `user_institution_verifications`, `email_verification_codes`) ✅ shipped 2026-08-14 (dashboard `0016`+`0017`)
+- II-2. Auto-verify on signup via email domain (extend `handle_new_user`) ✅ shipped 2026-08-14 (dashboard `0018`)
+- II-3. Institution picker in lab / facility creation forms — blocked: no lab-creation form exists yet; picker will land in Settings → Lab profile (edit current lab's institution) as the natural first home
 - II-4. Email-code verification fallback
 - II-5. `search_labs` RPC + facility-side search UI
 
