@@ -12,12 +12,25 @@ import {
   FileSpreadsheet,
   Smartphone
 } from 'lucide-react'
+import {
+  InstitutionPicker,
+  type InstitutionPickerValue,
+} from '@/components/institution-picker'
 
 interface Profile {
   id: string
   email: string
   full_name: string | null
   lab_settings: any
+  lab_id: string | null
+  role: string | null
+}
+
+interface ActiveLab {
+  id: string
+  name: string
+  institution_id: string | null
+  campus: string | null
 }
 
 interface NotificationSettings {
@@ -66,6 +79,15 @@ export default function SettingsPage() {
     team_invites_accepted: false,
   })
 
+  // Active lab + institution registry state (II-3). Read from `labs`
+  // directly rather than the legacy `profiles.lab_settings` JSON blob.
+  const [activeLab, setActiveLab] = useState<ActiveLab | null>(null)
+  const [institutionValue, setInstitutionValue] = useState<InstitutionPickerValue>({
+    institutionId: null,
+    campus: null,
+  })
+  const [savingInstitution, setSavingInstitution] = useState(false)
+
   useEffect(() => {
     loadUserData()
   }, [])
@@ -98,6 +120,24 @@ export default function SettingsPage() {
         setDefaultStrain(labSettings.default_strain || '')
         setLabAddress(labSettings.lab_address || '')
         setGoogleSheetsUrl(labSettings.google_sheets_url || '')
+
+        // Load the active lab so we can render the institution
+        // registry section. Silent on failure — the section just
+        // won't show up.
+        if (profile.lab_id) {
+          const { data: lab } = await supabase
+            .from('labs')
+            .select('id, name, institution_id, campus')
+            .eq('id', profile.lab_id)
+            .single()
+          if (lab) {
+            setActiveLab(lab)
+            setInstitutionValue({
+              institutionId: lab.institution_id,
+              campus: lab.campus,
+            })
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading user data:', error)
@@ -181,6 +221,38 @@ export default function SettingsPage() {
       showMessage('error', 'Failed to update lab profile')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const saveInstitution = async () => {
+    if (!activeLab) return
+
+    setSavingInstitution(true)
+    try {
+      const { data, error } = await supabase
+        .from('labs')
+        .update({
+          institution_id: institutionValue.institutionId,
+          campus: institutionValue.campus,
+        })
+        .eq('id', activeLab.id)
+        .select('id, name, institution_id, campus')
+        .single()
+
+      if (error) throw error
+
+      setActiveLab(data)
+      showMessage('success', 'Institution updated')
+    } catch (err: any) {
+      // RLS rejects non-PI updates with a permission error. Surface
+      // a friendly message rather than the raw postgres string.
+      const msg =
+        err?.code === '42501' || /permission/i.test(err?.message ?? '')
+          ? 'Only the lab PI can change institution'
+          : err?.message || 'Failed to update institution'
+      showMessage('error', msg)
+    } finally {
+      setSavingInstitution(false)
     }
   }
 
@@ -550,6 +622,62 @@ export default function SettingsPage() {
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
+
+      {/* Institution Registry (II-3) — canonical institution + campus
+          on the labs table itself. Only PIs can save (RLS). */}
+      {activeLab && (
+        <div style={{ paddingTop: '20px', paddingBottom: '20px' }}>
+          <h4 className="font-display font-medium" style={{ color: '#1A1A2E', fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>
+            Institution Registry
+          </h4>
+          <p className="font-body" style={{ color: '#6B7280', fontSize: '13px', marginBottom: '16px' }}>
+            Pick your institution from the shared registry. Used for
+            facility oversight and cross-lab discovery.
+            {profile.role !== 'pi' && (
+              <span
+                className="font-body"
+                style={{ color: '#9CA3AF', display: 'block', marginTop: '2px', fontSize: '12px' }}
+              >
+                Read-only — only the lab PI can change this.
+              </span>
+            )}
+          </p>
+
+          <div style={{ marginBottom: '16px' }}>
+            <label className="block font-body font-medium" style={{ color: '#374151', fontSize: '13px', marginBottom: '4px' }}>
+              Institution
+            </label>
+            <InstitutionPicker
+              value={institutionValue}
+              onChange={setInstitutionValue}
+              disabled={profile.role !== 'pi' || savingInstitution}
+            />
+          </div>
+
+          {profile.role === 'pi' && (
+            <button
+              onClick={saveInstitution}
+              disabled={
+                savingInstitution ||
+                (institutionValue.institutionId === activeLab.institution_id &&
+                  institutionValue.campus === activeLab.campus)
+              }
+              className="font-body font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: '#1A7F64',
+                color: 'white',
+                fontSize: '13px',
+                padding: '6px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {savingInstitution ? 'Saving…' : 'Save Institution'}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 
