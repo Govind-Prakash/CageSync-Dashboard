@@ -25,7 +25,9 @@ Source of truth for outstanding work. Every unfinished capability discussed in p
 - Dashboard (Next.js 15): `/Users/govindprakash/SAAS/cagesync-dashboard/` — pushed to `origin/main`, current head `8f00d69` (before this IV commit).
 - Flutter mobile: `/Users/govindprakash/SAAS/cagesync/` — pushed to `origin/main`, current head `6ca3225`.
 
-**Migrations applied 0019–0021** were run via the Supabase Dashboard SQL editor because the current network blocks outbound port 5432 to `aws-1-ap-northeast-2.pooler.supabase.com`. The `supabase_migrations.schema_migrations` table does NOT record them. All three are idempotent (`IF NOT EXISTS` / `DROP POLICY IF EXISTS` / `ON CONFLICT DO NOTHING`) so a future `supabase db push` on a network that allows 5432 will safely no-op. To silence the CLI, run `supabase migration repair --status applied 0019 0020 0021` when unblocked.
+**Migrations applied via Supabase Dashboard SQL editor** (network blocks outbound port 5432 to the pooler): 0016, 0017, 0018, 0019, 0020, 0021, 0022. The `supabase_migrations.schema_migrations` table does NOT record any of them. All are idempotent (`IF NOT EXISTS` / `DROP POLICY IF EXISTS` / `ON CONFLICT DO NOTHING`) so a future `supabase db push` on a network that allows 5432 will safely no-op. To silence the CLI, run `supabase migration repair --status applied 0016 0017 0018 0019 0020 0021 0022` when unblocked.
+
+**Discovered 2026-08-18 during VIII-1 test:** the 5 core entity tables + 2 flag tables were never in `supabase_realtime` publication, so Flutter's RealtimeSyncService received zero events despite subscribing correctly. Fixed by migration 0022. A second gap remains: Flutter has no cold-start Supabase→SQLite reconciliation, so rows created before app open still don't reach devices. Tracked as a Flutter follow-up.
 
 **Users**
 - 1 real user: `govind7x@gmail.com` (PI of "CageSync Lab", IISER Bhopal, id `add08510-…`)
