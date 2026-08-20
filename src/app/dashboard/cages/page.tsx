@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getActiveLabId } from '@/lib/supabase/lab'
 import { LayoutGrid, Plus } from 'lucide-react'
 import AddCageModal from '@/components/cages/add-cage-modal'
+import TransferCageButton from '@/components/cages/transfer-cage-button'
 
 export default async function CagesPage() {
   const supabase = await createClient()
@@ -161,6 +162,15 @@ export default async function CagesPage() {
                 >
                   Created
                 </th>
+                <th
+                  className="px-6 py-3 text-right font-body font-medium uppercase tracking-wider"
+                  style={{
+                    color: '#6B7280',
+                    fontSize: '11px'
+                  }}
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -224,6 +234,15 @@ export default async function CagesPage() {
                     >
                       {getRelativeTime(cage.created_at)}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    {labId && (
+                      <TransferCageButton
+                        cageId={cage.id}
+                        cageLabel={cage.label || cage.cage_code}
+                        currentLabId={labId}
+                      />
+                    )}
                   </td>
                 </tr>
               ))}
