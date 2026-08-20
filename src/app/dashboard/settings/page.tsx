@@ -16,6 +16,7 @@ import {
   InstitutionPicker,
   type InstitutionPickerValue,
 } from '@/components/institution-picker'
+import FacilityRequestsSection from '@/components/settings/facility-requests-section'
 
 interface Profile {
   id: string
@@ -678,6 +679,14 @@ export default function SettingsPage() {
           )}
         </div>
       )}
+
+      {/* III-5: Facility oversight — accept/decline requests + revoke
+          active affiliations. Component shows itself only when
+          there's something relevant to show or the user can approve. */}
+      <FacilityRequestsSection
+        labId={profile.lab_id}
+        canApprove={profile.role === 'pi' || profile.role === 'lab_manager'}
+      />
     </div>
   )
 
