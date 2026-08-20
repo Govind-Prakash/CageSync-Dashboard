@@ -31,6 +31,9 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>
 }
 
+// Base navigation shared by everyone. Facility-specific item is
+// spliced in inside the component only for users with a
+// facility_memberships row (see isFacilityMember useEffect below).
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
   { name: 'Cages', href: '/dashboard/cages', icon: Archive },
@@ -42,6 +45,10 @@ const navigation: NavItem[] = [
   { name: 'Breeding', href: '/dashboard/breeding', icon: Heart },
   { name: 'Team', href: '/dashboard/team', icon: Users },
 ]
+
+const facilityNavItem: NavItem = {
+  name: 'Facility', href: '/dashboard/facility', icon: Building2,
+}
 
 interface SidebarProps {
   user: {
@@ -60,6 +67,22 @@ export default function Sidebar({ user }: SidebarProps) {
   const supabase = createClient()
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const profileMenuRef = useRef<HTMLDivElement>(null)
+  const [isFacilityMember, setIsFacilityMember] = useState(false)
+
+  // Check facility membership once on mount so the Facility nav
+  // item shows only for users who actually belong to one.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const { data } = await supabase
+        .from('facility_memberships')
+        .select('facility_id')
+        .limit(1)
+      if (cancelled) return
+      setIsFacilityMember((data?.length ?? 0) > 0)
+    })()
+    return () => { cancelled = true }
+  }, [supabase])
 
   // Get user initials from email
   const getUserInitials = (email: string): string => {
@@ -160,7 +183,10 @@ export default function Sidebar({ user }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 px-2 py-4 space-y-1">
-          {navigation.map((item) => {
+          {(isFacilityMember
+            ? [...navigation.slice(0, 3), facilityNavItem, ...navigation.slice(3)]
+            : navigation
+          ).map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
 
