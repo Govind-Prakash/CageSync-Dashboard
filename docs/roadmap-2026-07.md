@@ -105,7 +105,7 @@ Each workstream expands into concrete steps in section 4.
 - I-1. Dashboard header lab switcher ✅ shipped 2026-07-16
 - I-2. Onboarding branching (PI vs invitee vs facility overseer) ✅ shipped 2026-07-16 (silent auto-create)
 - I-3. Flutter lab switcher + adaptive header ✅ shipped 2026-07-16
-- I-4. Cage transfer flow between labs
+- I-4. Cage transfer flow between labs ✅ shipped 2026-08-20 (dashboard `0024` + `c4d886d`, flutter `7541bc9`) — SQL block E for paste
 
 ### Workstream II — Institution registry + domain-verified search
 - II-1. Schema additions (`institutions`, `labs.institution_id`, `labs.campus`, `labs.discoverable`, `facilities.institution_id`, `facilities.campus`, `user_institution_verifications`, `email_verification_codes`) ✅ shipped 2026-08-14 (dashboard `0016`+`0017`)
