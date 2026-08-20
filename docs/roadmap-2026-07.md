@@ -1,6 +1,6 @@
 # CageSync — Roadmap: July 2026
 
-_Last updated: 2026-08-14_
+_Last updated: 2026-08-20_
 
 Source of truth for outstanding work. Every unfinished capability discussed in prior sessions lives here, ordered, with per-step scope, verification, and commit templates. If a step is not in this file, it does not exist. If a step is here but not yet crossed out, it is not shipped.
 
@@ -126,9 +126,9 @@ Each workstream expands into concrete steps in section 4.
 - IV-1. Schema (`flag_types`, `cage_flags`, `cage_flag_attachments`) ✅ shipped 2026-08-14 (dashboard `0019`)
 - IV-2. Supabase Storage bucket + RLS ✅ shipped 2026-08-14 (dashboard `0020`)
 - IV-3. Seed flag_types (14 pre-defined) ✅ shipped 2026-08-14 (dashboard `0021`)
-- IV-4. Flutter: flag creation dialog + photo capture + upload
-- IV-5. Dashboard: cage detail flags section + resolve flow
-- IV-6. Realtime subscription addition
+- IV-4. Flutter: flag creation dialog + photo capture + upload ✅ shipped 2026-08-20 (flutter `1a151d1..0392171`; dashboard `0023` relaxes RLS so lab writers can flag)
+- IV-5. Dashboard: cage detail flags section + resolve flow ✅ shipped 2026-08-20 as `/dashboard/flags` inbox page (dashboard `63dfc4c`). Notification bell + panel wired to real cage_flags data (dashboard `77ee0e8`).
+- IV-6. Realtime subscription addition ✅ shipped 2026-08-20 (dashboard `0022` publication + `63dfc4c`/`77ee0e8` client subscriptions; flutter `cage_flags` added to RealtimeSyncService._tables)
 - IV-7. Instant email for urgent + daily digest (later)
 
 ### Workstream V — Direct writes for facility staff
