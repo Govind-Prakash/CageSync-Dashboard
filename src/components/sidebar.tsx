@@ -21,7 +21,8 @@ import {
   LogOut,
   ChevronRight,
   ExternalLink,
-  Heart
+  Heart,
+  Flag,
 } from 'lucide-react'
 
 interface NavItem {
@@ -33,6 +34,7 @@ interface NavItem {
 const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
   { name: 'Cages', href: '/dashboard/cages', icon: Archive },
+  { name: 'Flags', href: '/dashboard/flags', icon: Flag },
   { name: 'Animals', href: '/dashboard/animals', icon: Rabbit },
   { name: 'Experiments', href: '/dashboard/experiments', icon: FlaskConical },
   { name: 'Treatments', href: '/dashboard/treatments', icon: Stethoscope },
