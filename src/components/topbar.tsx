@@ -21,6 +21,10 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [tasksOpen, setTasksOpen] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
+  // Unread flag count reported by NotificationsPanel — drives the
+  // red badge on the bell so it reflects real cage_flags data
+  // instead of the hardcoded "3".
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const handleNotificationsToggle = () => {
     setNotificationsOpen(!notificationsOpen)
@@ -179,12 +183,18 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
             title="Notifications"
           >
             <Bell className="w-5 h-5" style={{ color: '#9CA3AF', transform: 'translateY(0.5px)' }} />
-            {!notificationsOpen && (
+            {!notificationsOpen && unreadCount > 0 && (
               <div
-                className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white font-medium"
-                style={{ backgroundColor: '#E53E3E', fontSize: '10px' }}
+                className="absolute -top-2 -right-2 rounded-full flex items-center justify-center text-white font-medium"
+                style={{
+                  backgroundColor: '#E53E3E',
+                  fontSize: '10px',
+                  minWidth: '16px',
+                  height: '16px',
+                  padding: '0 4px',
+                }}
               >
-                3
+                {unreadCount > 9 ? '9+' : unreadCount}
               </div>
             )}
           </button>
@@ -192,6 +202,7 @@ export default function Topbar({ currentPageTitle, onToastShow }: TopbarProps) {
           <NotificationsPanel
             isOpen={notificationsOpen}
             onClose={() => setNotificationsOpen(false)}
+            onUnreadCountChange={setUnreadCount}
           />
         </div>
 
