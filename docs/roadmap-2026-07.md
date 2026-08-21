@@ -132,7 +132,7 @@ Each workstream expands into concrete steps in section 4.
 - IV-7. Instant email for urgent + daily digest (later)
 
 ### Workstream V — Direct writes for facility staff
-- V-1. Observations INSERT policy extended to facility staff
+- V-1. Observations INSERT policy extended to facility staff ✅ shipped 2026-08-21 (dashboard `0027` + `9fe0e3b`)
 - V-2. Optional: litter proposal system (`pending_proposals` + RPCs + PI inbox)
 
 ### Workstream VI — Invite flow completion
