@@ -3,7 +3,8 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Building, XCircle } from 'lucide-react'
+import { Building, XCircle, Plus } from 'lucide-react'
+import RequestLabAffiliationModal from './RequestLabAffiliationModal'
 
 interface AffRow {
   lab_id: string
@@ -25,6 +26,7 @@ export default function AffiliatedLabsList({ facilityId, affiliations, canManage
   const router = useRouter()
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [requestOpen, setRequestOpen] = useState(false)
   const [, startTransition] = useTransition()
 
   const revoke = async (labId: string) => {
@@ -49,11 +51,27 @@ export default function AffiliatedLabsList({ facilityId, affiliations, canManage
 
   return (
     <section>
-      <div className="flex items-center mb-3" style={{ gap: '8px' }}>
-        <Building className="w-4 h-4" style={{ color: '#1A7F64' }} />
-        <h2 className="font-display font-medium" style={{ color: '#1A1A2E', fontSize: '14px' }}>
-          Affiliated labs ({affiliations.length})
-        </h2>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center" style={{ gap: '8px' }}>
+          <Building className="w-4 h-4" style={{ color: '#1A7F64' }} />
+          <h2 className="font-display font-medium" style={{ color: '#1A1A2E', fontSize: '14px' }}>
+            Affiliated labs ({affiliations.length})
+          </h2>
+        </div>
+        {canManage && (
+          <button
+            onClick={() => setRequestOpen(true)}
+            className="font-body font-medium inline-flex items-center"
+            style={{
+              backgroundColor: '#1A7F64', color: 'white',
+              fontSize: '12px', padding: '5px 10px', borderRadius: '6px',
+              border: 'none', cursor: 'pointer', gap: '4px',
+            }}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Request lab
+          </button>
+        )}
       </div>
 
       {error && (
@@ -113,6 +131,13 @@ export default function AffiliatedLabsList({ facilityId, affiliations, canManage
             </div>
           ))}
         </div>
+      )}
+
+      {requestOpen && (
+        <RequestLabAffiliationModal
+          facilityId={facilityId}
+          onClose={() => setRequestOpen(false)}
+        />
       )}
     </section>
   )
