@@ -17,6 +17,7 @@ import {
   type InstitutionPickerValue,
 } from '@/components/institution-picker'
 import FacilityRequestsSection from '@/components/settings/facility-requests-section'
+import InstitutionVerificationDialog from '@/components/institution-verification-dialog'
 
 interface Profile {
   id: string
@@ -88,6 +89,8 @@ export default function SettingsPage() {
     campus: null,
   })
   const [savingInstitution, setSavingInstitution] = useState(false)
+  const [verifyOpen, setVerifyOpen] = useState(false)
+  const [pickedInstitution, setPickedInstitution] = useState<{ id: string; name: string; email_domains: string[] } | null>(null)
 
   useEffect(() => {
     loadUserData()
@@ -656,28 +659,75 @@ export default function SettingsPage() {
           </div>
 
           {profile.role === 'pi' && (
-            <button
-              onClick={saveInstitution}
-              disabled={
-                savingInstitution ||
-                (institutionValue.institutionId === activeLab.institution_id &&
-                  institutionValue.campus === activeLab.campus)
-              }
-              className="font-body font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: '#1A7F64',
-                color: 'white',
-                fontSize: '13px',
-                padding: '6px 16px',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              {savingInstitution ? 'Saving…' : 'Save Institution'}
-            </button>
+            <div className="flex items-center" style={{ gap: '8px' }}>
+              <button
+                onClick={saveInstitution}
+                disabled={
+                  savingInstitution ||
+                  (institutionValue.institutionId === activeLab.institution_id &&
+                    institutionValue.campus === activeLab.campus)
+                }
+                className="font-body font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: '#1A7F64',
+                  color: 'white',
+                  fontSize: '13px',
+                  padding: '6px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                {savingInstitution ? 'Saving…' : 'Save Institution'}
+              </button>
+
+              {/* II-4: verify by email code — proves institutional
+                  affiliation for users whose signup email doesn't
+                  match a domain. */}
+              {institutionValue.institutionId && (
+                <button
+                  onClick={async () => {
+                    const { data } = await supabase
+                      .from('institutions')
+                      .select('id, common_name, email_domains')
+                      .eq('id', institutionValue.institutionId!)
+                      .single()
+                    if (data) {
+                      setPickedInstitution({
+                        id: data.id,
+                        name: data.common_name,
+                        email_domains: data.email_domains as string[],
+                      })
+                      setVerifyOpen(true)
+                    }
+                  }}
+                  className="font-body font-medium"
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: '#1A7F64',
+                    border: '1px solid #E2E8F0',
+                    fontSize: '13px',
+                    padding: '6px 16px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Verify by email code
+                </button>
+              )}
+            </div>
           )}
         </div>
+      )}
+
+      {verifyOpen && pickedInstitution && (
+        <InstitutionVerificationDialog
+          institutionId={pickedInstitution.id}
+          institutionName={pickedInstitution.name}
+          emailDomains={pickedInstitution.email_domains}
+          onClose={() => setVerifyOpen(false)}
+          onVerified={() => showMessage('success', 'Institution verified')}
+        />
       )}
 
       {/* III-5: Facility oversight — accept/decline requests + revoke
