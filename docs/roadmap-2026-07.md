@@ -112,7 +112,7 @@ Each workstream expands into concrete steps in section 4.
 - II-2. Auto-verify on signup via email domain (extend `handle_new_user`) ✅ shipped 2026-08-14 (dashboard `0018`)
 - II-3. Institution picker in lab / facility creation forms ✅ shipped 2026-08-14 as Settings → Lab profile → "Institution Registry" section (no lab-creation form exists; picker will be reused when one does)
 - II-4. Email-code verification fallback ✅ shipped 2026-08-21 (dashboard `0029` + `/api/institutions/send-verification` + InstitutionVerificationDialog + Settings wiring, `309bac7`)
-- II-5. `search_labs` RPC + facility-side search UI
+- II-5. `search_labs` RPC + facility-side search UI ✅ shipped 2026-08-21 (dashboard `0030` + RequestLabAffiliationModal on /dashboard/facility, `373e8ab`)
 
 ### Workstream III — Facility feature
 - III-1. `facility_technician` role + `facility_invites` table + `accept_facility_invite` RPC ✅ shipped 2026-08-20 (dashboard `0025` + `a644e0c` + `/invite-facility/accept` page)
