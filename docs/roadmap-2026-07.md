@@ -111,7 +111,7 @@ Each workstream expands into concrete steps in section 4.
 - II-1. Schema additions (`institutions`, `labs.institution_id`, `labs.campus`, `labs.discoverable`, `facilities.institution_id`, `facilities.campus`, `user_institution_verifications`, `email_verification_codes`) ✅ shipped 2026-08-14 (dashboard `0016`+`0017`)
 - II-2. Auto-verify on signup via email domain (extend `handle_new_user`) ✅ shipped 2026-08-14 (dashboard `0018`)
 - II-3. Institution picker in lab / facility creation forms ✅ shipped 2026-08-14 as Settings → Lab profile → "Institution Registry" section (no lab-creation form exists; picker will be reused when one does)
-- II-4. Email-code verification fallback
+- II-4. Email-code verification fallback ✅ shipped 2026-08-21 (dashboard `0029` + `/api/institutions/send-verification` + InstitutionVerificationDialog + Settings wiring, `309bac7`)
 - II-5. `search_labs` RPC + facility-side search UI
 
 ### Workstream III — Facility feature
