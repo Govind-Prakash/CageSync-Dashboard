@@ -120,7 +120,7 @@ Each workstream expands into concrete steps in section 4.
 - III-3. Update `is_facility_overseer_of_lab` to use affiliations ✅ shipped 2026-08-20 (included in `0026`)
 - III-4. Facility management page (dashboard) ✅ shipped 2026-08-20 (`/dashboard/facility` + sidebar link + invite modal, dashboard `59de0ae`)
 - III-5. Lab-side "pending facility requests" acceptance UI ✅ shipped 2026-08-20 (dashboard `e223002` — FacilityRequestsSection in Settings → Lab Profile)
-- III-6. Flutter facility view mode
+- III-6. Flutter facility view mode ✅ shipped 2026-08-21 (flutter `4bfafc2` foundation + `6a26d80` cross-lab cages view with mode toggle)
 
 ### Workstream IV — Flag system (facility staff → cage flags with photos)
 - IV-1. Schema (`flag_types`, `cage_flags`, `cage_flag_attachments`) ✅ shipped 2026-08-14 (dashboard `0019`)
