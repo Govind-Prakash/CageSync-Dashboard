@@ -139,7 +139,7 @@ Each workstream expands into concrete steps in section 4.
 - VI-1. Flutter invite form (mirror of dashboard modal) + API route for email send ✅ shipped 2026-08-05 (dashboard `abab60a`, flutter `2848e76`)
 
 ### Workstream VII — Audit & compliance
-- VII-1. Audit log table + triggers on destructive ops
+- VII-1. Audit log table + triggers on destructive ops ✅ shipped 2026-08-21 (dashboard `0028` + `4f49fd6`)
 - VII-2. Move `lab_settings` from `profiles` to `labs` (correct scoping)
 
 ### Workstream VIII — Verification & production hardening
