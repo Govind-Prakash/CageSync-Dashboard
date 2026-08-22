@@ -143,11 +143,11 @@ Each workstream expands into concrete steps in section 4.
 - VII-2. Move `lab_settings` from `profiles` to `labs` (correct scoping)
 
 ### Workstream VIII — Verification & production hardening
-- VIII-1. Round-trip parity test (Task #7 from original roadmap — never closed)
-- VIII-2. Verify `cagesync.com` domain in Resend
-- VIII-3. Change email `from` to `invites@cagesync.com`
-- VIII-4. Rotate Resend API key
-- VIII-5. Add `RESEND_API_KEY` + `NEXT_PUBLIC_SITE_URL` to Vercel env vars
+- VIII-1. Round-trip parity test — partial: cage direction both ways proven end-to-end 2026-08-18; other 4 entities (animal/treatment/litter/record) untested
+- VIII-2. Verify `cagesync.com` domain in Resend ✅ done (verified as of 2026-08-22 — DKIM + SPF green)
+- VIII-3. Change email `from` to `invites@cagesync.com` ✅ shipped 2026-08-05 (`13bb142` — now delivers real emails since VIII-2)
+- VIII-4. Rotate Resend API key — skipped by user; existing key stays
+- VIII-5. Add `RESEND_API_KEY` + `NEXT_PUBLIC_SITE_URL` to Vercel env vars ✅ confirmed set 2026-08-22
 - VIII-6. Commit or resolve the 8 pre-existing modified Flutter files ✅ shipped 2026-08-05 (flutter `2848e76`, `a422769`, `6ca3225`)
 - VIII-7. Remove `records.synced_to_sheet` tech debt or formalize its purpose
 
