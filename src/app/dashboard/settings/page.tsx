@@ -33,6 +33,7 @@ interface ActiveLab {
   name: string
   institution_id: string | null
   campus: string | null
+  settings: Record<string, any>
 }
 
 interface NotificationSettings {
@@ -116,30 +117,44 @@ export default function SettingsPage() {
         setProfile(profile)
         setFullName(profile.full_name || '')
 
-        const labSettings = profile.lab_settings || {}
-        setTitle(labSettings.title || '')
-        setInstitution(labSettings.institution || '')
-        setLabName(labSettings.lab_name || '')
-        setLabInstitution(labSettings.lab_institution || '')
-        setDefaultStrain(labSettings.default_strain || '')
-        setLabAddress(labSettings.lab_address || '')
-        setGoogleSheetsUrl(labSettings.google_sheets_url || '')
+        // Personal fields still live on profiles.lab_settings.
+        const personalSettings = profile.lab_settings || {}
+        setTitle(personalSettings.title || '')
+        setInstitution(personalSettings.institution || '')
 
-        // Load the active lab so we can render the institution
-        // registry section. Silent on failure — the section just
-        // won't show up.
+        // Load the active lab. Lab-scoped fields (name, address,
+        // default strain, google sheets URL) now live on labs.name +
+        // labs.settings per VII-2a. `profiles.lab_settings.lab_*`
+        // kept as a fallback for the deprecation window in case
+        // labs.settings hasn't been backfilled yet on some device.
         if (profile.lab_id) {
           const { data: lab } = await supabase
             .from('labs')
-            .select('id, name, institution_id, campus')
+            .select('id, name, institution_id, campus, settings')
             .eq('id', profile.lab_id)
             .single()
           if (lab) {
-            setActiveLab(lab)
+            const labSettings = (lab.settings || {}) as Record<string, any>
+            setActiveLab({ ...lab, settings: labSettings })
             setInstitutionValue({
               institutionId: lab.institution_id,
               campus: lab.campus,
             })
+
+            // Read priority: labs.settings > legacy profile fallback.
+            setLabName(lab.name || personalSettings.lab_name || '')
+            setLabInstitution(personalSettings.lab_institution || '') // legacy display only
+            setDefaultStrain(
+              labSettings.default_strain ?? personalSettings.default_strain ?? '',
+            )
+            setLabAddress(
+              labSettings.lab_address ?? personalSettings.lab_address ?? '',
+            )
+            setGoogleSheetsUrl(
+              labSettings.google_sheets_url ??
+                personalSettings.google_sheets_url ??
+                '',
+            )
           }
         }
       }
@@ -198,31 +213,46 @@ export default function SettingsPage() {
   }
 
   const saveLabProfile = async () => {
-    if (!profile) return
+    if (!profile || !activeLab) return
 
     setSaving(true)
     try {
-      const labSettings = {
-        ...profile.lab_settings,
-        lab_name: labName,
-        lab_institution: labInstitution,
+      // Lab-scoped fields now split between labs.name (proper
+      // column) and labs.settings (jsonb blob). Both writes are
+      // gated to PI/lab_manager by RLS (labs_update_pi) and by the
+      // update_lab_settings RPC's role check.
+      const newSettings: Record<string, any> = {
+        ...activeLab.settings,
         default_strain: defaultStrain,
         lab_address: labAddress,
         google_sheets_url: googleSheetsUrl,
       }
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ lab_settings: labSettings })
-        .eq('id', profile.id)
+      const [{ error: nameErr }, rpcRes] = await Promise.all([
+        // Only update labs.name if it actually changed — avoids
+        // touching updated_at unnecessarily.
+        labName && labName !== activeLab.name
+          ? supabase.from('labs').update({ name: labName }).eq('id', activeLab.id)
+          : Promise.resolve({ error: null } as { error: null }),
+        supabase.rpc('update_lab_settings', {
+          p_lab_id: activeLab.id,
+          p_settings: newSettings,
+        }),
+      ])
 
-      if (error) throw error
+      if (nameErr) throw nameErr
+      if (rpcRes.error) throw rpcRes.error
 
       showMessage('success', 'Lab profile updated successfully')
-      setProfile({ ...profile, lab_settings: labSettings })
-    } catch (error) {
+      setActiveLab({ ...activeLab, name: labName || activeLab.name, settings: newSettings })
+    } catch (error: any) {
       console.error('Error saving lab profile:', error)
-      showMessage('error', 'Failed to update lab profile')
+      const msg =
+        error?.code === '42501' ||
+        /permission|not_authorized/i.test(error?.message ?? '')
+          ? 'Only the lab PI or manager can update the lab profile.'
+          : 'Failed to update lab profile'
+      showMessage('error', msg)
     } finally {
       setSaving(false)
     }
@@ -240,12 +270,12 @@ export default function SettingsPage() {
           campus: institutionValue.campus,
         })
         .eq('id', activeLab.id)
-        .select('id, name, institution_id, campus')
+        .select('id, name, institution_id, campus, settings')
         .single()
 
       if (error) throw error
 
-      setActiveLab(data)
+      setActiveLab({ ...data, settings: (data.settings || {}) as Record<string, any> })
       showMessage('success', 'Institution updated')
     } catch (err: any) {
       // RLS rejects non-PI updates with a permission error. Surface
@@ -541,28 +571,10 @@ export default function SettingsPage() {
           />
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <label className="block font-body font-medium" style={{ color: '#374151', fontSize: '13px', marginBottom: '4px' }}>
-            Institution
-          </label>
-          <input
-            type="text"
-            value={labInstitution}
-            onChange={(e) => setLabInstitution(e.target.value)}
-            className="border font-body focus:outline-none focus:ring-2 focus:border-[#1A7F64] focus:ring-[#E8F5F1]"
-            style={{
-              borderColor: '#E2E8F0',
-              borderRadius: '6px',
-              padding: '6px 10px',
-              fontSize: '14px',
-              color: '#1A1A2E',
-              height: '36px',
-              maxWidth: '480px',
-              width: '100%'
-            }}
-            placeholder="e.g. Hebrew University"
-          />
-        </div>
+        {/* Legacy free-text Institution field removed with VII-2b.
+            The Institution Registry section below (II-3) is now the
+            canonical source: it writes labs.institution_id + labs.campus
+            as proper columns instead of a per-user JSON blob. */}
 
         <div style={{ marginBottom: '16px' }}>
           <label className="block font-body font-medium" style={{ color: '#374151', fontSize: '13px', marginBottom: '4px' }}>
