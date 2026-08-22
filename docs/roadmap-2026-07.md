@@ -129,7 +129,7 @@ Each workstream expands into concrete steps in section 4.
 - IV-4. Flutter: flag creation dialog + photo capture + upload ✅ shipped 2026-08-20 (flutter `1a151d1..0392171`; dashboard `0023` relaxes RLS so lab writers can flag)
 - IV-5. Dashboard: cage detail flags section + resolve flow ✅ shipped 2026-08-20 as `/dashboard/flags` inbox page (dashboard `63dfc4c`). Notification bell + panel wired to real cage_flags data (dashboard `77ee0e8`).
 - IV-6. Realtime subscription addition ✅ shipped 2026-08-20 (dashboard `0022` publication + `63dfc4c`/`77ee0e8` client subscriptions; flutter `cage_flags` added to RealtimeSyncService._tables)
-- IV-7. Instant email for urgent + daily digest (later)
+- IV-7. Instant email for urgent + daily digest (later) ✅ shipped 2026-08-22 (urgent path only: dashboard `0032` + `/api/cron/send-flag-notifications` + vercel.json minute-cron, `1a24638`). Daily digest deferred.
 
 ### Workstream V — Direct writes for facility staff
 - V-1. Observations INSERT policy extended to facility staff ✅ shipped 2026-08-21 (dashboard `0027` + `9fe0e3b`)
