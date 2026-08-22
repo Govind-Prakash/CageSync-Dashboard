@@ -140,7 +140,7 @@ Each workstream expands into concrete steps in section 4.
 
 ### Workstream VII — Audit & compliance
 - VII-1. Audit log table + triggers on destructive ops ✅ shipped 2026-08-21 (dashboard `0028` + `4f49fd6`)
-- VII-2. Move `lab_settings` from `profiles` to `labs` (correct scoping)
+- VII-2. Move `lab_settings` from `profiles` to `labs` (correct scoping) ✅ shipped 2026-08-22 (dashboard `0033` + `3f40660` settings-page swap + flutter `4b07db2` labSettingsProvider + RPC-backed updateLabSettings). profiles.lab_settings kept for 1 release cycle as fallback; drop migration follows.
 
 ### Workstream VIII — Verification & production hardening
 - VIII-1. Round-trip parity test — partial: cage direction both ways proven end-to-end 2026-08-18; other 4 entities (animal/treatment/litter/record) untested
