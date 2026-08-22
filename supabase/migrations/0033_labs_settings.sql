@@ -44,7 +44,9 @@ UPDATE public.labs l
          AND lm.role   = 'pi'::public.user_role
          AND p.lab_settings IS NOT NULL
          AND p.lab_settings <> '{}'::jsonb
-       ORDER BY p.updated_at DESC NULLS LAST
+       -- profiles has no updated_at; deterministic tie-break by id
+       -- so re-runs of this backfill are stable.
+       ORDER BY p.id
        LIMIT 1),
      '{}'::jsonb
    )
