@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import {
   ChevronLeft,
   ChevronRight,
@@ -55,6 +56,8 @@ const eventCategories = {
   }
 }
 
+// Fallback preview events shown before the Supabase fetch resolves.
+// Once real events land they replace these.
 const sampleEvents: CalendarEvent[] = [
   {
     id: '1',
@@ -103,8 +106,9 @@ const sampleEvents: CalendarEvent[] = [
 ]
 
 export default function CalendarPage() {
+  const supabase = useMemo(() => createClient(), [])
   const [currentView, setCurrentView] = useState<ViewType>('week')
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 4, 26)) // May 26, 2026
+  const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedFilters, setSelectedFilters] = useState({
     breeding: true,
     treatments: true,
@@ -112,6 +116,120 @@ export default function CalendarPage() {
     critical: true,
     maintenance: true
   })
+
+  // Real events computed from Supabase (litters wean dates, treatment
+  // schedules, experiment start/end, urgent flags). Falls back to
+  // `sampleEvents` until the fetch resolves so the calendar isn't
+  // blank for the first ~200ms.
+  const [events, setEvents] = useState<CalendarEvent[]>(sampleEvents)
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    ;(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: profile } = await supabase
+        .from('profiles').select('lab_id').eq('id', user.id).single()
+      const labId = profile?.lab_id
+      if (!labId) {
+        setEvents([])
+        setLoaded(true)
+        return
+      }
+
+      const [litters, treatments, experiments, flags] = await Promise.all([
+        // Litters → wean date + expected birth events
+        supabase
+          .from('litters')
+          .select('id, pup_count, dob, wean_date, cage_id, cages!inner(cage_code, label)')
+          .eq('lab_id', labId),
+        supabase
+          .from('treatments')
+          .select('id, treatment_type, substance, administered_at, given_at, animal_id, animals!inner(animal_code, cage_id, cages(cage_code))')
+          .eq('lab_id', labId)
+          .not('administered_at', 'is', null),
+        supabase
+          .from('experiments')
+          .select('id, name, start_date, end_date, status')
+          .eq('lab_id', labId),
+        supabase
+          .from('cage_flags')
+          .select('id, severity, notes, created_at, cage:cages!inner(cage_code, label), type:flag_types!inner(label)')
+          .eq('lab_id', labId)
+          .eq('severity', 'urgent'),
+      ])
+
+      const derived: CalendarEvent[] = []
+
+      // Litters → wean date event
+      for (const l of litters.data ?? []) {
+        const cage = Array.isArray(l.cages) ? l.cages[0] : l.cages
+        const cageStr = (cage?.label || cage?.cage_code || 'cage') as string
+        if (l.wean_date) {
+          derived.push({
+            id: `wean-${l.id}`,
+            title: `Wean litter — ${cageStr} (${l.pup_count} pups)`,
+            type: 'breeding',
+            cage: (cage?.cage_code || cageStr) as string,
+            date: (l.wean_date as string).split('T')[0],
+          })
+        }
+      }
+
+      // Treatments → administration date event
+      for (const t of treatments.data ?? []) {
+        const at = (t.administered_at ?? t.given_at) as string | null
+        if (!at) continue
+        const animal = Array.isArray(t.animals) ? t.animals[0] : t.animals
+        const cage = animal?.cages ? (Array.isArray(animal.cages) ? animal.cages[0] : animal.cages) : null
+        derived.push({
+          id: `tx-${t.id}`,
+          title: `${t.treatment_type ?? t.substance ?? 'Treatment'} — ${animal?.animal_code ?? 'animal'}`,
+          type: 'treatments',
+          cage: cage?.cage_code ?? undefined,
+          animal: animal?.animal_code ?? undefined,
+          time: new Date(at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+          date: at.split('T')[0],
+        })
+      }
+
+      // Experiments → start + end date events
+      for (const e of experiments.data ?? []) {
+        if (e.start_date) {
+          derived.push({
+            id: `exp-start-${e.id}`,
+            title: `Experiment start — ${e.name}`,
+            type: 'observations',
+            date: (e.start_date as string).split('T')[0],
+          })
+        }
+        if (e.end_date) {
+          derived.push({
+            id: `exp-end-${e.id}`,
+            title: `Experiment end — ${e.name}`,
+            type: 'critical',
+            date: (e.end_date as string).split('T')[0],
+          })
+        }
+      }
+
+      // Urgent flags → critical events (day the flag was raised)
+      for (const f of flags.data ?? []) {
+        const cage = Array.isArray(f.cage) ? f.cage[0] : f.cage
+        const type = Array.isArray(f.type) ? f.type[0] : f.type
+        derived.push({
+          id: `flag-${f.id}`,
+          title: `URGENT ${type?.label ?? 'Flag'} — ${cage?.label || cage?.cage_code || 'cage'}`,
+          type: 'critical',
+          cage: cage?.cage_code ?? undefined,
+          date: (f.created_at as string).split('T')[0],
+        })
+      }
+
+      setEvents(derived)
+      setLoaded(true)
+    })()
+  }, [supabase])
 
   const formatDateRange = () => {
     if (currentView === 'week') {
@@ -169,7 +287,7 @@ export default function CalendarPage() {
 
   const getEventsForDate = (date: Date): CalendarEvent[] => {
     const dateKey = date.toISOString().split('T')[0]
-    return sampleEvents.filter(event =>
+    return events.filter(event =>
       event.date === dateKey && selectedFilters[event.type]
     )
   }
@@ -210,7 +328,7 @@ export default function CalendarPage() {
           hour: 'numeric',
           hour12: true
         }),
-        events: sampleEvents.filter(event => {
+        events: events.filter(event => {
           const eventDate = new Date(event.date)
           const slotDate = new Date(currentDate)
 
@@ -228,7 +346,7 @@ export default function CalendarPage() {
   }
 
   const getTimelineEvents = () => {
-    return sampleEvents
+    return events
       .filter(event => selectedFilters[event.type])
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   }
@@ -472,7 +590,7 @@ export default function CalendarPage() {
 
                   {/* Day columns */}
                   {weekDays.map((day, dayIndex) => {
-                    const dayEvents = sampleEvents.filter(event => {
+                    const dayEvents = events.filter(event => {
                       const eventDate = new Date(event.date)
                       if (event.time && eventDate.toDateString() === day.toDateString()) {
                         const eventHour = parseInt(event.time.split(':')[0])

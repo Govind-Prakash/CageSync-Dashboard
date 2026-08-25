@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import {
   Plus,
   Search,
@@ -70,6 +71,7 @@ const priorityColors = {
   low: '#6B7280'
 }
 
+// Fallback preview shown before the Supabase fetch resolves.
 const sampleTasks: Task[] = [
   {
     id: '1',
@@ -159,7 +161,116 @@ type TaskPriority = 'all' | 'critical' | 'high' | 'normal' | 'low'
 type SortBy = 'dueDate' | 'priority' | 'created' | 'assignee'
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState(sampleTasks)
+  const supabase = useMemo(() => createClient(), [])
+  // Real tasks computed from litters (upcoming wean), unresolved
+  // cage_flags (urgent), and experiments approaching end_date. Once
+  // a real `tasks` table ships (backlog), this fetch merges auto-
+  // generated with manual rows.
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [tasksLoaded, setTasksLoaded] = useState(false)
+
+  useEffect(() => {
+    ;(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: profile } = await supabase
+        .from('profiles').select('lab_id').eq('id', user.id).single()
+      const labId = profile?.lab_id
+      if (!labId) {
+        setTasks([])
+        setTasksLoaded(true)
+        return
+      }
+
+      const today = new Date()
+      const in14days = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+      const nowIso = today.toISOString()
+      const in14Iso = in14days.toISOString()
+
+      const [litters, flags, experiments] = await Promise.all([
+        supabase
+          .from('litters')
+          .select('id, pup_count, wean_date, status, cage_id, cages!inner(cage_code, label)')
+          .eq('lab_id', labId)
+          .eq('status', 'nursing')
+          .lte('wean_date', in14Iso),
+        supabase
+          .from('cage_flags')
+          .select('id, severity, notes, created_at, cage:cages!inner(cage_code, label), type:flag_types!inner(label)')
+          .eq('lab_id', labId)
+          .eq('resolved', false),
+        supabase
+          .from('experiments')
+          .select('id, name, end_date, status')
+          .eq('lab_id', labId)
+          .not('end_date', 'is', null)
+          .lte('end_date', in14Iso),
+      ])
+
+      const derived: Task[] = []
+
+      // Wean litters — auto-generated protocol task
+      for (const l of litters.data ?? []) {
+        const cage = Array.isArray(l.cages) ? l.cages[0] : l.cages
+        const wean = new Date(l.wean_date as string)
+        const overdue = wean < today
+        derived.push({
+          id: `wean-${l.id}`,
+          title: `Wean litter (${l.pup_count} pups) — ${cage?.label || cage?.cage_code}`,
+          description: `Litter reaches P21${overdue ? ' (overdue)' : ''}. Separate pups and update cage cards.`,
+          type: 'protocol',
+          source: 'auto',
+          priority: overdue ? 'critical' : 'high',
+          status: overdue ? 'overdue' : 'pending',
+          dueDate: (l.wean_date as string).split('T')[0],
+          cage: cage?.cage_code ?? undefined,
+          createdAt: nowIso,
+        })
+      }
+
+      // Unresolved cage flags — compliance / attention task
+      for (const f of flags.data ?? []) {
+        const cage = Array.isArray(f.cage) ? f.cage[0] : f.cage
+        const type = Array.isArray(f.type) ? f.type[0] : f.type
+        derived.push({
+          id: `flag-${f.id}`,
+          title: `Resolve flag: ${type?.label ?? 'Flag'} — ${cage?.label || cage?.cage_code}`,
+          description: f.notes ?? 'Facility flagged this cage. Review and resolve on the Flags page.',
+          type: 'compliance',
+          source: 'system',
+          priority: f.severity === 'urgent' ? 'critical' :
+                    f.severity === 'attention' ? 'high' : 'normal',
+          status: 'pending',
+          dueDate: (f.created_at as string).split('T')[0],
+          cage: cage?.cage_code ?? undefined,
+          createdAt: f.created_at as string,
+        })
+      }
+
+      // Experiments approaching end — protocol close task
+      for (const e of experiments.data ?? []) {
+        const end = new Date(e.end_date as string)
+        const overdue = end < today
+        derived.push({
+          id: `exp-end-${e.id}`,
+          title: `Close experiment — ${e.name}`,
+          description: `Experiment end date is ${end.toLocaleDateString()}. Finalize records + IACUC report.`,
+          type: 'protocol',
+          source: 'auto',
+          priority: overdue ? 'critical' : 'normal',
+          status: overdue ? 'overdue' : 'pending',
+          dueDate: (e.end_date as string).split('T')[0],
+          protocol: e.name,
+          createdAt: nowIso,
+        })
+      }
+
+      // Sort by due date so the most-urgent floats to top.
+      derived.sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+      setTasks(derived)
+      setTasksLoaded(true)
+    })()
+  }, [supabase])
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
   const [typeFilter, setTypeFilter] = useState<TaskType>('all')
