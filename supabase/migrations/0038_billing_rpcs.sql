@@ -431,6 +431,12 @@ GRANT EXECUTE ON FUNCTION public.get_vet_facility_revenue(uuid, date, date) TO a
 -- ============================================================
 -- Verify (paste-runner sanity checks)
 -- ============================================================
+-- NOTE: no smoke test here that CALLS get_researcher_billing().
+-- Supabase's SQL editor runs as postgres with no auth.uid(), so the
+-- 'not_signed_in' guard fires and — because the editor wraps runs in
+-- a single transaction — the failure rolls back all the CREATE
+-- FUNCTIONs above. Verify by counting registrations instead; the
+-- RPCs work when called from the app with a real JWT.
 SELECT COUNT(*) AS rpcs_registered
   FROM pg_proc
  WHERE proname IN (
@@ -439,10 +445,3 @@ SELECT COUNT(*) AS rpcs_registered
    'get_pi_billing',
    'get_vet_facility_revenue'
  );
-
--- Smoke test — call your own billing for current calendar month.
--- Expect a jsonb result. If you have no cages yet, cages=[] and totals=0.
-SELECT public.get_researcher_billing(
-  date_trunc('month', CURRENT_DATE)::date,
-  (date_trunc('month', CURRENT_DATE) + interval '1 month - 1 day')::date
-) AS my_billing_this_month;
