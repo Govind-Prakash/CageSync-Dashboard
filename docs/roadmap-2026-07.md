@@ -6,6 +6,22 @@ Source of truth for outstanding work. Every unfinished capability discussed in p
 
 ---
 
+## ⚠️ KNOWN REGRESSION — urgent flag email cron disabled (2026-08-25)
+
+**Status:** DISABLED in prod. `vercel.json` had `"schedule": "* * * * *"` for `/api/cron/send-flag-notifications`, which Vercel Hobby rejects (Hobby allows daily crons only). This silently blocked every deploy from 2026-08-22 to 2026-08-25 — Vercel discarded config-invalid builds before creating deployment records, so nothing appeared in the Deployments list even though the GitHub webhook was firing correctly. Removing `crons` from `vercel.json` unblocked deploys.
+
+**Impact right now:** urgent cage flags are inserted into `cage_flags` correctly, but no email is sent to the PI. The endpoint code (`/api/cron/send-flag-notifications`), the DB trigger from migration `0032`, and Resend integration all still work — only the *scheduler* is missing.
+
+**Must restore before real users depend on urgent alerts.** Three viable paths:
+
+1. **GitHub Actions cron (recommended, $0)** — add `.github/workflows/cron.yml` with `on: schedule: - cron: '* * * * *'` that `curl`s the endpoint. Free on public repos, free-tier minutes on private. ~10 min setup. Every-minute allowed. Endpoint should validate a shared secret in the header to prevent abuse.
+2. **cron-job.org / EasyCron** — external free service, sign-up + paste URL. Simplest, but adds a third-party dependency.
+3. **Vercel Pro upgrade ($20/mo)** — restore `crons` array to `vercel.json` as-is, no code change. Only worth it if we're already going Pro for other reasons.
+
+**Do NOT re-add the cron to `vercel.json` unless we upgrade to Pro** — it will re-break the deploy pipeline.
+
+---
+
 ## Table of contents
 
 1. [Where we are today](#1-where-we-are-today)
@@ -129,7 +145,7 @@ Each workstream expands into concrete steps in section 4.
 - IV-4. Flutter: flag creation dialog + photo capture + upload ✅ shipped 2026-08-20 (flutter `1a151d1..0392171`; dashboard `0023` relaxes RLS so lab writers can flag)
 - IV-5. Dashboard: cage detail flags section + resolve flow ✅ shipped 2026-08-20 as `/dashboard/flags` inbox page (dashboard `63dfc4c`). Notification bell + panel wired to real cage_flags data (dashboard `77ee0e8`).
 - IV-6. Realtime subscription addition ✅ shipped 2026-08-20 (dashboard `0022` publication + `63dfc4c`/`77ee0e8` client subscriptions; flutter `cage_flags` added to RealtimeSyncService._tables)
-- IV-7. Instant email for urgent + daily digest (later) ✅ shipped 2026-08-22 (urgent path only: dashboard `0032` + `/api/cron/send-flag-notifications` + vercel.json minute-cron, `1a24638`). Daily digest deferred.
+- IV-7. Instant email for urgent + daily digest (later) ⚠️ **cron DISABLED 2026-08-25** — see "Known Regression" section at top of this file. Endpoint + trigger still deployed; scheduler removed to unblock Hobby-plan deploys. Daily digest deferred.
 
 ### Workstream V — Direct writes for facility staff
 - V-1. Observations INSERT policy extended to facility staff ✅ shipped 2026-08-21 (dashboard `0027` + `9fe0e3b`)
