@@ -167,6 +167,23 @@ Each workstream expands into concrete steps in section 4.
 - VIII-6. Commit or resolve the 8 pre-existing modified Flutter files ✅ shipped 2026-08-05 (flutter `2848e76`, `a422769`, `6ca3225`)
 - VIII-7. Remove `records.synced_to_sheet` tech debt or formalize its purpose
 
+### Workstream IX — Cage cost tracking / billing (started 2026-08-25)
+
+Rate-setter is the vet (facility side, not the PI). All amounts stored as integer "minor units" (cents/agorot/paise); display divides by 100 (or 1 for JPY-like currencies). Dashboard shows fractional; Flutter shows integer only. Billing period defaults to current calendar month with a Week/Month/All-time toggle. Delegation is customizable at both lab-default and per-cage override.
+
+- IX-1. Facility currency + `facility_billing_rates` schema + set-rate RPC (dashboard `0035`)
+- IX-2. `cages.owner_user_id` + `cages.vet_delegation_override` + `labs.vet_delegation_default` (dashboard `0036`, backfill existing cages → PI)
+- IX-3. `cage_services` + `billing_notifications` tables + insert-notify trigger (dashboard `0037`)
+- IX-4. Billing calculation RPCs: `get_researcher_billing`, `get_pi_billing`, `get_vet_facility_revenue` (dashboard `0038`)
+- IX-5. Vet UI — `/dashboard/facility/billing` rate-setting page + "Log a service" modal on cage detail
+- IX-6. PI dashboard "Lab billing" card with period toggle and per-researcher breakdown
+- IX-7. Researcher dashboard "My billing" card with per-cage breakdown
+- IX-8. Notification bell picks up `billing_notifications` + realtime toast when vet adds a charge
+- IX-9. Delegation toggles: PI Settings "Delegate all cages" + cage-detail three-state override
+- IX-10. Cage-creation "Assigned to" dropdown (defaults to current user, PI can override)
+
+**Deferred to follow-up:** email notification for vet extras (rides on the same GH Actions cron we build for urgent flag emails); Flutter billing UI (mobile is view-only for billing at MVP); invoice PDF export.
+
 ---
 
 ## 4. Detailed step-by-step blueprint
