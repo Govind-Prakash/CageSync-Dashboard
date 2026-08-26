@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Building2 } from 'lucide-react'
+import { Building2, DollarSign } from 'lucide-react'
 import AffiliatedLabsList from './AffiliatedLabsList'
 import PendingRequests from './PendingRequests'
 import FacilityStaffList from './FacilityStaffList'
@@ -68,26 +69,43 @@ export default async function FacilityPage() {
     .eq('facility_id', facilityId)
 
   const isFacilityManager = myRole === 'facility_manager'
+  const canBill = myRole === 'facility_vet' || myRole === 'facility_manager'
 
   return (
     <div className="pt-2 mx-auto" style={{ maxWidth: '900px' }}>
       {/* Header */}
-      <div className="flex items-center mb-6" style={{ gap: '12px' }}>
-        <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: '#E8F5F1' }}
-        >
-          <Building2 className="w-5 h-5" style={{ color: '#1A7F64' }} />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center" style={{ gap: '12px' }}>
+          <div
+            className="w-10 h-10 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: '#E8F5F1' }}
+          >
+            <Building2 className="w-5 h-5" style={{ color: '#1A7F64' }} />
+          </div>
+          <div>
+            <h1 className="font-display font-semibold" style={{ color: '#1A1A2E', fontSize: '20px' }}>
+              {facility?.name ?? 'Facility'}
+            </h1>
+            <p className="font-body" style={{ color: '#6B7280', fontSize: '13px' }}>
+              {facility?.institution ? `${facility.institution} · ` : ''}
+              You are {formatRole(myRole)}
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="font-display font-semibold" style={{ color: '#1A1A2E', fontSize: '20px' }}>
-            {facility?.name ?? 'Facility'}
-          </h1>
-          <p className="font-body" style={{ color: '#6B7280', fontSize: '13px' }}>
-            {facility?.institution ? `${facility.institution} · ` : ''}
-            You are {formatRole(myRole)}
-          </p>
-        </div>
+        {canBill && (
+          <Link
+            href="/dashboard/facility/billing"
+            className="font-body font-medium inline-flex items-center"
+            style={{
+              backgroundColor: '#1A7F64', color: 'white',
+              fontSize: '13px', padding: '8px 14px', borderRadius: '6px',
+              textDecoration: 'none', gap: '6px',
+            }}
+          >
+            <DollarSign className="w-3.5 h-3.5" />
+            Billing
+          </Link>
+        )}
       </div>
 
       <div className="space-y-8">
