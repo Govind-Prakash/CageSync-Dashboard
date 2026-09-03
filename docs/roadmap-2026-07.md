@@ -184,6 +184,25 @@ Rate-setter is the vet (facility side, not the PI). All amounts stored as intege
 
 **Deferred to follow-up:** email notification for vet extras (rides on the same GH Actions cron we build for urgent flag emails); Flutter billing UI (mobile is view-only for billing at MVP); invoice PDF export.
 
+### Workstream X — Subscriptions & payments (planned 2026-09-01)
+
+Two-channel model: **Stripe (global)** + **Razorpay (India)** for self-serve online payments, plus a **manual admin override** RPC so vivariums/facility managers can mark labs as pro after institutional PO / bank-transfer payments settle offline. Never IAP — B2B SaaS carve-out from Apple/Google store rules; "Upgrade" on mobile opens the web dashboard checkout in the external browser.
+
+Current state — fake paywall in Flutter (`pro_paywall_screen.dart`, `redesigned_settings_screen.dart`) shows a "Start free trial" button that only toasts + closes. `_hasProSubscription` reads `auth.users.raw_user_meta_data.subscription_status`, which nothing writes. Paywall gates only a *display-role dropdown* — no real functionality is gated by pro yet. **The one-line SQL override in `~/Downloads/block_u_fake_pro.sql` unblocks testing until X ships.**
+
+- X-1. `0039_subscriptions.sql` — subscriptions + subscription_events tables + `is_lab_pro(lab_id)` + `grant_lab_subscription(...)` RPCs (admin manual override)
+- X-2. Stripe account setup — products, prices, webhook endpoint registered, secrets in Vercel env
+- X-3. Next.js API routes: `/api/billing/create-checkout`, `/api/billing/webhook/stripe`, `/api/billing/portal`. Webhook must verify signature + insert into subscription_events with UNIQUE (provider, provider_event_id) for idempotency.
+- X-4. `/dashboard/billing/subscription` page — current plan badge, upgrade CTA, currency-aware provider picker (INR → Razorpay, else Stripe), invoice history from provider API
+- X-5. Admin override UI on vet's `/dashboard/facility/billing` — "Grant Pro to a lab" section calling `grant_lab_subscription`; sets `provider='manual'` for visual distinction
+- X-6. Entitlement gating wiring: cage-count limit (>5) on insert, team-invite limit on invite; consult `is_lab_pro` before allowing. Decide what else is Pro-only (analytics, CSV export, etc.)
+- X-7. Razorpay parallel path — account (requires India-registered business), `/api/billing/webhook/razorpay`, same shape as Stripe
+- X-8. Flutter `subscriptionProvider` (Riverpod) that calls `is_lab_pro` on cold start + on lab switch. Rewrite `_hasProSubscription` reads to consult it. Replace `_onStartFreeTrial` toast with `launchUrl` to `app.cagesync.com/dashboard/billing/subscription?lab_id=…&plan=…&source=mobile`.
+
+**Prerequisites before starting X:** Stripe account created; Razorpay account started (approval takes 1-2 days); price points confirmed (paywall currently shows $20/mo annual, $30/mo monthly); decide the free-tier limits (5 cages? 1 collaborator? no analytics?).
+
+**Effort estimate:** 12-15 hours total across X-1..X-8. Blocks IX-6..IX-10 only if we do X first; if we finish IX first, X slots in cleanly on top.
+
 ---
 
 ## 4. Detailed step-by-step blueprint
